@@ -3,7 +3,7 @@ from flask import jsonify, request, render_template
 from application.models import db, Admins, Services, ServiceProfessionals, Customers
 
 # Gets all services
-@app.get('/services')
+@app.get('/api/services')
 def services():
     services = Services.query.all()
     return jsonify([service.serialize() for service in services])

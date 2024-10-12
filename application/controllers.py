@@ -9,7 +9,7 @@ from application.security import generate_token, token_required
 def catch_all(path):
     return render_template('index.html')
 
-@app.post('/adminLogin')
+@app.post('/api/admin/login')
 def adminLogin():
     data = request.json
     email = data['email']
@@ -22,7 +22,7 @@ def adminLogin():
         return jsonify('User not found.'), 404
 
 # Not yet implemented
-@app.post('/login')
+@app.post('/api/login')
 def login():
     data = request.json
     email = data['email']
@@ -38,7 +38,7 @@ def login():
         return jsonify('User not found.'), 404
 
 # Registers a new user
-@app.post('/register')
+@app.post('/api/register')
 def register():
     data = request.json
     
@@ -67,8 +67,9 @@ def register():
             password = data['password']
             description = data['description']
             service_type = data['serviceType']
+            admin_approved = 0
 
-            service_professional = ServiceProfessionals(email=email, name=name, password=password, description=description, service_type=service_type)
+            service_professional = ServiceProfessionals(email=email, name=name, password=password, description=description, service_type=service_type, admin_approved=admin_approved)
             db.session.add(service_professional)
             db.session.commit()
             return jsonify('Service professional created successfully'), 200

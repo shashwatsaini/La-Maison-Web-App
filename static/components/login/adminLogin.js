@@ -71,7 +71,7 @@ export default ({
             }
 
             try {
-                const response = await fetch('/adminLogin', {
+                const response = await fetch('/api/admin/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

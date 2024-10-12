@@ -14,3 +14,37 @@
     background-color: #333;
     color: #fff;
 }
+
+.btn-adminApprove {
+    flex: 1;
+    margin: 0 10px;
+    background-color: green;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    width: 74px;
+    padding: 5px 30px;
+    max-width: 200px;
+}
+
+.btn-adminApprove:hover {
+    background-color: rgb(1, 93, 1);
+    color: #fff;
+}
+
+.btn-adminReject {
+    flex: 1;
+    margin: 0 10px;
+    background-color: red;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    width: 74px;
+    padding: 5px 30px;
+    max-width: 200px;
+}
+
+.btn-adminReject:hover {
+    background-color: rgb(108, 0, 0);
+    color: #fff;
+}

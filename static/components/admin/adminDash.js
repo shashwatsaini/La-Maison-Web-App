@@ -64,6 +64,46 @@ export default ({
             </div>
         </div>
 
+        <div v-if="viewType==2">
+            <div class="row justify-content-center">
+                <div  class="col-12 col-md-6 d-flex justify-content-center">
+                    <h3>Approve new <span class="logo-font">PROFESSIONNELS</span>.</h3>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row justify-content-center">
+                <div v-for="serviceProfessional in unapprovedServiceProfessionals" class="col-12 col-md-4 d-flex justify-content-center">
+                    <div class="card d-flex flex-row align-items-center p-3" style="width: 90%; margin: 10px;">
+                        <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
+                            <img :src="serviceProfessional.icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 30px; padding: 10px;">
+
+                            <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                                <button type="button" @click="approveServiceProfessional(serviceProfessional.email)" class="btn-adminApprove d-flex align-items-center justify-content-center mb-2">
+                                    <i class="fa fa-check"></i>
+                                </button>
+                                <button type="button" @click="rejectServiceProfessional(serviceProfessional.email)" class="btn-adminReject d-flex align-items-center justify-content-center mb-2">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
+                            <h6 class="card-title">{{ serviceProfessional.name }}</h6>
+                            <p class="card-text">{{ serviceProfessional.description }}</p>
+                            <p class="card-text">
+                                Service: {{ serviceProfessional.service_name }}
+                                <br>
+                                Email: {{ serviceProfessional.email }}
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <br><br>
 
         <customFooter />
@@ -113,7 +153,7 @@ export default ({
             formData.append('icon', this.icon);
 
             try {
-                const response = await fetch('/admin/service', {
+                const response = await fetch('/api/admin/service', {
                     method: 'POST',
                     headers: {
                         'x-access-token': this.token
@@ -139,12 +179,94 @@ export default ({
 
         getToken: function() {
             return localStorage.getItem('token')
+        },
+
+        async getUnapprovedServiceProfessionals() {
+            try {
+                const response = await fetch('/api/admin/service-professionals/', {
+                    method: 'GET',
+                    headers: {
+                        'x-access-token': this.token
+                    }
+                })
+
+                if (response.ok) {
+                    var data = await response.json()
+                    this.unapprovedServiceProfessionals = data
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async approveServiceProfessional(email) {
+            try {
+                const response = await fetch('/api/admin/service-professionals/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    this.unapprovedServiceProfessionals = this.unapprovedServiceProfessionals.filter(professional => professional.email != email)
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async rejectServiceProfessional(email) {
+            try {
+                const response = await fetch('/api/admin/service-professionals/', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    this.unapprovedServiceProfessionals = this.unapprovedServiceProfessionals.filter(professional => professional.email != email)
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
         }
     },
 
     data() {
         return {
             token: '',
+            unapprovedServiceProfessionals: [],
             viewType: 0,
             name: '',
             description: '',
@@ -160,5 +282,7 @@ export default ({
             alert('You are not logged in. Redirecting to login page.')
             window.location.href = '/adminLogin'
         }
+
+        this.getUnapprovedServiceProfessionals()
     }
 })

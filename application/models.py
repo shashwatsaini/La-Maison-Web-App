@@ -35,7 +35,7 @@ class Customers(db.Model):
     password = db.Column(db.String, nullable=False)
     date_created = db.Column(db.DateTime, default=db.func.now())
     address = db.Column(db.String, nullable=False)
-    services_booked = db.Column(db.Integer, nullable=False, default='0')
+    services_booked = db.Column(db.Integer, nullable=False, default=0)
 
     # For flask-login
     def get_id(self):
@@ -50,7 +50,22 @@ class ServiceProfessionals(db.Model):
     description = db.Column(db.String, nullable=False)
     service_type = db.Column(db.String, nullable=False)
     experience = db.Column(db.Integer, nullable=False, default=0)
-    services_completed = db.Column(db.Integer, nullable=False, default='0')
+    services_completed = db.Column(db.Integer, nullable=False, default=0)
+    admin_approved = db.Column(db.Integer, nullable=False, default=0)
+
+    def serialize(self):
+        return {
+            'email': self.email,
+            'name': self.name,
+            'date_created': self.date_created,
+            'description': self.description,
+            'service_type': self.service_type,
+            'experience': self.experience,
+            'services_completed': self.services_completed,
+            'admin_approved': self.admin_approved,
+            'service_name': Services.query.filter_by(id=self.service_type).first().name,
+            'icon_path': Services.query.filter_by(id=self.service_type).first().icon_path
+        }
 
     # For flask-login
     def get_id(self):

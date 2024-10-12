@@ -140,7 +140,7 @@ export default ({
                 }
 
                 try {
-                    const response = await fetch('/register', {
+                    const response = await fetch('/api/register', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -175,7 +175,7 @@ export default ({
                 }
 
                 try {
-                    const response = await fetch('/register', {
+                    const response = await fetch('/api/register', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ export default ({
         },
 
         async getServices() {
-            const response = await fetch('/services')
+            const response = await fetch('/api/services')
             const services = await response.json()
             this.services = services
         }

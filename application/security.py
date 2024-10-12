@@ -13,6 +13,7 @@ def generate_token(email):
 
 # Decorator to check if the user is authenticated
 def token_required(f):
+    @wraps(f)
     def decorated(*args, **kwargs):
         token = None
 
@@ -39,6 +40,6 @@ def token_required(f):
         else:
             return jsonify({'message': 'User unauthorized!'}), 401
         
-        return f(current_user, *args, **kwargs)
+        return f(*args, **kwargs)
 
     return decorated

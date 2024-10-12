@@ -4,7 +4,7 @@ from flask import jsonify, request, render_template
 from application.models import db, Admins, Services, ServiceProfessionals, Customers
 from application.security import generate_token, token_required
 
-@app.post('/admin/service')
+@app.post('/api/admin/service')
 @token_required
 def addService():
     name = request.form.get('name')
@@ -30,3 +30,27 @@ def addService():
         return jsonify({'message': str(e)}), 400
 
     return jsonify('Service added successfully'), 200
+
+@app.get('/api/admin/service-professionals/')
+@token_required
+def getUnapprovedServiceProfessionals():
+    service_professionals = ServiceProfessionals.query.filter_by(admin_approved=0)
+    return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
+
+@app.post('/api/admin/service-professionals/')
+@token_required
+def approveServiceProfessional():
+    email = request.json['email']
+    service_professional = ServiceProfessionals.query.filter_by(email=email).first()
+    service_professional.admin_approved = 1
+    db.session.commit()
+    return jsonify('Service professional approved successfully'), 200
+
+@app.delete('/api/admin/service-professionals/')
+@token_required
+def deleteServiceProfessional():
+    email = request.json['email']
+    service_professional = ServiceProfessionals.query.filter_by(email=email).first()
+    db.session.delete(service_professional)
+    db.session.commit()
+    return jsonify('Service professional deleted successfully'), 200

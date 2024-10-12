@@ -121,7 +121,7 @@ export default ({
 
     methods: {
         async getServices() {
-            const response = await fetch('/services')
+            const response = await fetch('/api/services')
             const services = await response.json()
             this.services = services
         }
