@@ -1,0 +1,16 @@
+
+.btn-adminControls {
+    flex: 1;
+    margin: 0 10px;
+    background-color: #001;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    max-width: 200px;
+}
+
+.btn-adminControls:hover {
+    background-color: #333;
+    color: #fff;
+}

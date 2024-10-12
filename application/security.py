@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import current_app as app
 from flask import jsonify, request
 from application.models import db, Admins, ServiceProfessionals, Customers
@@ -19,21 +20,25 @@ def token_required(f):
             token = request.headers['x-access-token']
 
         if not token:
-            return jsonify({'message': 'Token is missing!'}), 401
+            return jsonify({'message': 'Missing authentication!'}), 401
 
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-            if Admins.query.get(data['email']).first():
-                current_user = Admins.query.get(data['email']).first()
-            elif Customers.query.get(data['email']).first():
-                current_user = Customers.query.get(data['email']).first()
-            elif ServiceProfessionals.query.get(data['email']).first():
-                current_user = ServiceProfessionals.query.get(data['email']).first
-            else:
-                return jsonify({'message': 'Token is invalid!'}), 401
+            email = data['email']
         except:
             return jsonify({'message': 'Token is invalid!'}), 401
 
+        # Check if the user exists in any of the possible user models
+        current_user = None
+        if Admins.query.get(email):
+            current_user = Admins.query.get(email)
+        elif Customers.query.get(email):
+            current_user = Customers.query.get(email)
+        elif ServiceProfessionals.query.get(email):
+            current_user = ServiceProfessionals.query.get(email)
+        else:
+            return jsonify({'message': 'User unauthorized!'}), 401
+        
         return f(current_user, *args, **kwargs)
 
     return decorated

@@ -153,8 +153,8 @@ export default ({
                         window.location.href = '/login'
                     } else {
                         var data = await response.json()
-                        if (data["message"]) {
-                            alert(data["message"])
+                        if (data['message']) {
+                            alert(data['message'])
                         } else {
                             alert('Invalid credentials. Please try again.')
                         }
