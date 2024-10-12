@@ -1,0 +1,156 @@
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+.row {
+    width: 100%;
+}
+
+/* Navbar styles */
+.logo {
+    max-height: 50px;
+    height: auto;
+    width: auto;
+    margin-left: auto;
+    margin: 0;
+}
+
+.logo-font {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.logo-hr {
+    margin: 0;
+    border: 1px solid #000;
+}
+
+.button-like {
+    cursor: pointer;
+    display: inline-block;
+    padding: 10px;
+    font-size: 2rem;
+    border-radius: 5px;
+    user-select: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-bottom: 0;
+}
+
+.button-like:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.button-like:active {
+    transform: scale(0.98);
+}
+
+.button-like:focus {
+    outline: none;
+}
+
+
+/* Home page styles */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Login form styles */
+.form-container {
+    border: 1px solid #001;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #001;
+    border-radius: 5px;
+}
+
+.btn {
+    background-color: #001;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+}
+
+.btn:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.btn-register {
+    background-color: #001;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    max-width: 200px;
+}
+
+.btn-register:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+.btn-small {
+    background-color: #001;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    width: 40%;
+}
+
+.btn-small:hover {
+    background-color: #333;
+    color: #fff;
+}
+
+/* Footer styles */
+.footer {
+    background-color: #001;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding-bottom: 0px;
+    left: 0;
+    bottom: 0;
+    position: fixed;
+}
+
+.non-sticky-footer {
+    background-color: #001;
+    color: white;
+    text-align: center;
+    width: 100%;
+    padding-bottom: 0px;
+    position: relative;
+}
+
+.footer-links {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+.footer-link {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 10px;
+    transition: color 0.3s ease;
+}
