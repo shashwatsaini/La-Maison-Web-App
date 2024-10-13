@@ -60,6 +60,29 @@ export default ({
 
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 d-flex justify-content-center">
+                <h4>Don't trust us? Check our reviews.</h4>
+            </div>
+
+            <br><br>
+
+            <div class="col-12 col-md-9 d-flex flex-wrap justify-content-center">                
+                <div v-for="review in reviews" class="card d-flex flex-row align-items-center p-3" style="width: 18rem; margin: 10px;">
+                    <div class="card-body p-0">
+                        <h6 class="card-title">{{ review.name }}</h6>
+                        <p v-if="review.type" class="card-text">{{ review.type }}, <span class="logo-font" style="font-size: 1.15em">UN {{ review.user }}</span></p>
+                        <p v-if="!review.type" class="card-text"><span class="logo-font" style="font-size: 1.15em">UN {{ review.user }}</span></p>
+                        <p class="card-text">{{ review.review }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <seperator />
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 d-flex justify-content-center">
                 <h3>Browse from our services curated especially <span class="logo-font" style="font-size: 1.15em;">POUR TOI.</span></h3>
             </div>
         </div>
@@ -102,6 +125,23 @@ export default ({
 
         <div class="row justify-content-center">
             <div class="col-9 col-md-8.5 d-flex justify-content-center">
+                <p>Cleaning at your doorstep.</p>
+            </div>
+
+            <div class="col-12 col-md-9 d-flex flex-wrap justify-content-center">                
+                <div v-for="service in cleaning_services" class="card d-flex flex-row align-items-center p-3" style="width: 18rem; margin: 10px;">
+                    <img :src="service.icon_path" alt="service logo" class="card-img-left" style="width: 50px; height: 50px; margin-right: 10px;">
+                    <div class="card-body p-0">
+                        <h6 class="card-title">{{ service.name }}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="row justify-content-center">
+            <div class="col-9 col-md-8.5 d-flex justify-content-center">
                 <p>And trust us, there's more.</p>
             </div>
         </div>
@@ -130,6 +170,25 @@ export default ({
     data() {
         return {
             services: [],
+            reviews: [
+                {
+                    name: 'Bob The Builder',
+                    type: 'Repair',
+                    user: 'PROFESSIONNEL',
+                    review: 'Well, this site’s as sturdy as a well-built shed—clean, quick, and does the job right! Whoever built this definitely knows their way around the web like I know my hammer.'
+                },
+                {
+                    name: 'Sokrates The Philosopher',
+                    user: 'PATRON',
+                    review: 'This website, much like the pursuit of wisdom, is simple yet profound. It invites inquiry and rewards those who seek with clarity and purpose.'
+                },
+                {
+                    name: 'Glam Guru',
+                    type: 'Beauty',
+                    user: 'PROFESSIONNEL',
+                    review: 'Darlings, this website is simply fabulous! It\'s like a makeover for your browsing experience—flawless, stylish, and absolutely dazzling!'
+                }
+            ],
             beauty_services: [
                 {
                     name: 'Haircut',
@@ -164,6 +223,24 @@ export default ({
                 {
                     name: 'AC Installation & Repair',
                     icon_path: '/static/uploads/detailed_services/ac-repair.png'
+                }
+            ],
+            cleaning_services: [
+                {
+                    name: 'Home Cleaning',
+                    icon_path: '/static/uploads/detailed_services/house.png'
+                },
+                {
+                    name: 'Bathroom Cleaning',
+                    icon_path: '/static/uploads/detailed_services/bathroom.png'
+                },
+                {
+                    name: 'Kitchen Cleaning',
+                    icon_path: '/static/uploads/detailed_services/kitchen.png'
+                },
+                {
+                    name: 'Carpet Cleaning',
+                    icon_path: '/static/uploads/detailed_services/carpet.png'
                 }
             ]
         }
