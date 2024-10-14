@@ -63,7 +63,8 @@ export default ({
                                         <label for="InputDate" class="form-label">New Service Date</label>
                                         <input type="date" class="form-control" id="InputDescription" v-model="modifyCustomerRequest_date" required>
                                     </div>
-                                    <button type="submit" class="btn btn-primary w-100">Modify</button>
+                                    <button type="submit" class="btn btn-primary w-100" style="margin-bottom: 10px;">Modify</button>
+                                    <button type="button" @click="cancelCustomerRequest()" class="btn btn-primary w-100" style="background-color: red;">Cancel Request</button>
                                 </form>
                             </div>
                         </div>
@@ -313,6 +314,24 @@ export default ({
                 }
             } catch (error) {
                 alert('Error:', error)
+            }
+        },
+
+        async cancelCustomerRequest() {
+            const response = await fetch('api/customer/service-professionals/requests', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': this.token
+                },
+                body: JSON.stringify({ id: this.modifyCustomerRequestView })
+            })
+
+            if (response.ok) {
+                alert('Request cancelled successfully.')
+                window.location.href = '/customerDash'
+            } else {
+                alert('Error cancelling request.')
             }
         },
 

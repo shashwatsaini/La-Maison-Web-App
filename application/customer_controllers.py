@@ -67,3 +67,16 @@ def updateCustomerRequests():
     db.session.commit()
 
     return jsonify('Service request updated successfully'), 200
+
+@app.delete('/api/customer/service-professionals/requests')
+@token_required
+def deleteCustomerRequests():
+    token = request.headers['x-access-token']
+    customer_id = get_email_from_token(token)
+    id = request.json['id']
+
+    customer_request = CustomerRequests.query.filter_by(id=id, customer_id=customer_id).first()
+    db.session.delete(customer_request)
+    db.session.commit()
+
+    return jsonify('Service request deleted successfully'), 200
