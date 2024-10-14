@@ -80,6 +80,37 @@ class ServiceProfessionals(db.Model):
     # For flask-login
     def get_id(self):
         return str(self.email)
+    
+class ServiceRequests(db.Model):
+    __tablename__ = 'ServiceRequests'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    customer_id = db.Column(db.String, db.ForeignKey('Customers.email'), nullable=False)
+    serviceProfessional_id = db.Column(db.String, db.ForeignKey('ServiceProfessionals.email'), nullable=False)
+    service_type = db.Column(db.Integer, db.ForeignKey('Services.id'), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    for_date = db.Column(db.DateTime, nullable=False)
+    description = db.Column(db.String)
+    status = db.Column(db.Integer, nullable=False, default=0)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'customer_id': self.customer_id,
+            'customer_name': Customers.query.filter_by(email=self.customer_id).first().name,
+            'customer_address': Customers.query.filter_by(email=self.customer_id).first().address,
+            'serviceProfessional_id': self.serviceProfessional_id,
+            'serviceProfessional_name': ServiceProfessionals.query.filter_by(email=self.serviceProfessional_id).first().name,
+            'serviceProfessional_description': ServiceProfessionals.query.filter_by(email=self.serviceProfessional_id).first().description,
+            'service_type': self.service_type,
+            'service_name': Services.query.filter_by(id=self.service_type).first().name,
+            'price': self.price,
+            'created_at': self.created_at.strftime('%Y-%m-%d'),
+            'for_date': self.for_date.strftime('%Y-%m-%d'),
+            'for_day': self.for_date.strftime('%A'),
+            'description': self.description,
+            'status': self.status
+        }
 
 class CustomerRequests(db.Model):
     __tablename__ = 'CustomerRequests'
@@ -98,6 +129,7 @@ class CustomerRequests(db.Model):
             'id': self.id,
             'customer_id': self.customer_id,
             'customer_name': Customers.query.filter_by(email=self.customer_id).first().name,
+            'customer_address': Customers.query.filter_by(email=self.customer_id).first().address,
             'serviceProfessional_id': self.serviceProfessional_id,
             'serviceProfessional_name': ServiceProfessionals.query.filter_by(email=self.serviceProfessional_id).first().name,
             'serviceProfessional_description': ServiceProfessionals.query.filter_by(email=self.serviceProfessional_id).first().description,

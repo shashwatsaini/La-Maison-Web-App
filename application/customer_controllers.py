@@ -51,7 +51,7 @@ def requestServiceProfessional():
 
     return jsonify('Service requested successfully'), 200
 
-@app.put('/api/customer/service-professionals/requests')
+@app.patch('/api/customer/service-professionals/requests')
 @token_required
 def updateCustomerRequests():
     token = request.headers['x-access-token']

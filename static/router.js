@@ -4,6 +4,7 @@ import adminLogin from './components/login/adminLogin.js'
 import register from './components/login/register.js'
 import adminDash from './components/admin/adminDash.js'
 import customerDash from './components/customer/customerDash.js'
+import serviceProfessionalDash from './components/serviceProfessional/serviceProfessionalDash.js'
 
 const routes = [
     { path: '/', component: home, name: 'home' },
@@ -11,7 +12,8 @@ const routes = [
     { path: '/adminLogin', component: adminLogin, name: 'adminLogin' },
     { path: '/register', component: register, name: 'register' },
     { path: '/adminDash', component: adminDash, name: 'adminDash' },
-    { path: '/customerDash', component: customerDash, name: 'customerDash' }
+    { path: '/customerDash', component: customerDash, name: 'customerDash' },
+    { path: '/serviceProfessionalDash', component: serviceProfessionalDash, name: 'serviceProfessionalDash' }
 ]
 
 const router = VueRouter.createRouter({

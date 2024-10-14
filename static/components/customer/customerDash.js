@@ -292,7 +292,7 @@ export default ({
 
             try {
                 const response = await fetch('api/customer/service-professionals/requests', {
-                    method: 'PUT',
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
                         'x-access-token': this.token
