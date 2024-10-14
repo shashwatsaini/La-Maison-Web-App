@@ -1,4 +1,9 @@
 
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
 .button-like-serviceProfessionalDash {
     cursor: pointer;
     display: inline-block;
@@ -24,7 +29,7 @@
     margin: 0 10px;
     background-color: green;
     color: #fff;
-    border: none;
+    border: 1px solid black;
     border-radius: 5px;
     width: 74px;
     padding: 5px 30px;
@@ -34,6 +39,8 @@
 .btn-serviceProfessionalApprove:hover {
     background-color: rgb(1, 93, 1);
     color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .btn-serviceProfessionalReject {
@@ -41,7 +48,7 @@
     margin: 0 10px;
     background-color: red;
     color: #fff;
-    border: none;
+    border: 1px solid black;
     border-radius: 5px;
     width: 74px;
     padding: 5px 30px;
@@ -51,6 +58,8 @@
 .btn-serviceProfessionalReject:hover {
     background-color: rgb(108, 0, 0);
     color: #fff;
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
 .btn-serviceProfessionalWhite {

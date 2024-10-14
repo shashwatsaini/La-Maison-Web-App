@@ -33,6 +33,15 @@ def getServiceProfessionalRequests():
     service_requests = ServiceRequests.query.filter_by(serviceProfessional_id=serviceProfessional_id, status=0)
     return jsonify([service_request.serialize() for service_request in service_requests]), 200
 
+@app.patch('/api/service-professionals/requests')
+@token_required
+def completeServiceRequest():
+    id = request.json['id']
+    service_request = ServiceRequests.query.filter_by(id=id).first()
+    service_request.status = 2
+    db.session.commit()
+    return jsonify('Service request completed successfully'), 200
+
 @app.get('/api/service-professionals/customer/requests')
 @token_required
 def getCustomerRequestsForServiceProfessional():
