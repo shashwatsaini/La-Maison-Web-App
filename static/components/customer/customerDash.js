@@ -16,6 +16,47 @@ export default ({
 
         <seperator />
 
+        <div v-if="serviceRequests[0]">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                    <h3>Your active requests are here, hang tight!</h3>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="container">
+                <div class="row justify-content-center g-4">
+                    <div v-for="(request, index) in serviceRequests" class="col-3 col-md-4">
+                        <div class="card d-flex flex-row align-items-center p-3">
+                            <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
+                                <img :src="services[request.service_type - 1].icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 30px; padding: 10px;">
+                                <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                                    <button type="button" class="btn-customerWhite d-flex align-items-center justify-content-center mb-2 w-100">
+                                        $ {{ services[request.service_type - 1].price }}
+                                    </button>
+                                    <button type="button" @click="cancelServiceRequest(request.id)" class="btn d-flex align-items-center justify-content-center mb-2 w-100" style="background-color: red;">
+                                        <i class="fa fa-times" style="margin-right: 10px;"></i> Cancel
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
+                                <h6 class="card-title">{{ request.serviceProfessional_name }},</h6>
+                                <h6 class="card-title">{{ request.service_name }} Service</h6>
+                                <br>
+                                <p class="card-text">{{ request.description }}</p>
+                                <p class="card-text">Booked for: {{ request.for_day }}, {{ request.for_date }}</p>
+                                <p class="card-text"><span class="logo-font">PROFESSIONNEL</span> description: {{ request.serviceProfessional_description }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <seperator />
+        </div>
+
         <div v-if="customerRequests[0]">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
@@ -317,6 +358,24 @@ export default ({
             }
         },
 
+        async cancelServiceRequest(id) {
+            const response = await fetch('api/customer/requests', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': this.token
+                },
+                body: JSON.stringify({ id: id })
+            })
+
+            if (response.ok) {
+                alert('Request cancelled successfully.')
+                window.location.href = '/customerDash'
+            } else {
+                alert('Error cancelling request.')
+            }
+        },
+
         async cancelCustomerRequest() {
             const response = await fetch('api/customer/service-professionals/requests', {
                 method: 'DELETE',
@@ -378,7 +437,18 @@ export default ({
             });
         
             this.serviceProfessionals = groupedServiceProfessionals;
-        },     
+        },    
+        
+        async getServiceRequests() {
+            const response = await fetch('/api/customer/requests', {
+                headers: {
+                    'x-access-token': this.token
+                }
+            })
+        
+            const serviceRequests = await response.json()
+            this.serviceRequests = serviceRequests
+        },
         
         async getCustomerRequests() {
             const response = await fetch('/api/customer/service-professionals/requests', {
@@ -403,6 +473,7 @@ export default ({
             token: '',
             customer: [],
             serviceProfessionals: [],
+            serviceRequests: [],
             customerRequests: [],
             serviceView: 0,
 
@@ -446,6 +517,7 @@ export default ({
 
         this.getCustomer()
         this.getServiceProfessionals()
+        this.getServiceRequests()
         this.getCustomerRequests()
         this.getServices()
     }

@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from flask import current_app as app
 from flask import jsonify, request, render_template
-from application.models import db, Admins, Services, ServiceProfessionals, Customers, CustomerRequests
+from application.models import db, Admins, Services, ServiceProfessionals, Customers,ServiceRequests, CustomerRequests
 from application.security import generate_token, token_required, get_email_from_token
 
 CustomerRequests_status = {
@@ -25,6 +25,27 @@ def getServiceProfessionals():
     service_professionals = ServiceProfessionals.query.filter_by(admin_approved=1)
     return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
 
+# Accepted service requests
+@app.get('/api/customer/requests')
+@token_required
+def getCustomerServiceRequests():
+    token = request.headers['x-access-token']
+    customer_id = get_email_from_token(token)
+    service_requests = ServiceRequests.query.filter_by(customer_id=customer_id, status=0)
+    return jsonify([service_request.serialize() for service_request in service_requests]), 200
+
+@app.delete('/api/customer/requests')
+@token_required
+def deleteCustomerServiceRequests():
+    id = request.json['id']
+
+    service_request = ServiceRequests.query.filter_by(id=id).first()
+    db.session.delete(service_request)
+    db.session.commit()
+
+    return jsonify('Service request deleted successfully'), 200
+
+# Pending service requests
 @app.get('/api/customer/service-professionals/requests')
 @token_required
 def getCustomerRequests():
@@ -54,14 +75,12 @@ def requestServiceProfessional():
 @app.patch('/api/customer/service-professionals/requests')
 @token_required
 def updateCustomerRequests():
-    token = request.headers['x-access-token']
-    customer_id = get_email_from_token(token)
     id = request.json['id']
     description = request.json['description']
     for_date = request.json['for_date']
     for_date = datetime.strptime(for_date, '%Y-%m-%d')
 
-    customer_request = CustomerRequests.query.filter_by(id=id, customer_id=customer_id).first()
+    customer_request = CustomerRequests.query.filter_by(id=id).first()
     customer_request.description = description
     customer_request.for_date = for_date
     db.session.commit()
