@@ -84,9 +84,13 @@ export default ({
                 })
 
                 if (response.ok) {
-                    const { token } = await response.json()
+                    const { token, user_type } = await response.json()
                     localStorage.setItem('token', token)
-                    window.location.href = '/dashboard'
+                    if (user_type == 0){
+                        window.location.href = '/customerDash'
+                    } else if (user_type == 1){
+                        window.location.href = '/serviceProfessionalDash'
+                    }
                 } else {
                     alert('Invalid credentials. Please try again.')
                 }

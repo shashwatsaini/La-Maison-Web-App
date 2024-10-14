@@ -1,3 +1,4 @@
+from datetime import datetime
 from application.database import db
 
 class Services(db.Model):
@@ -37,6 +38,15 @@ class Customers(db.Model):
     address = db.Column(db.String, nullable=False)
     services_booked = db.Column(db.Integer, nullable=False, default=0)
 
+    def serialize(self):
+        return {
+            'email': self.email,
+            'name': self.name,
+            'date_created': self.date_created,
+            'address': self.address,
+            'services_booked': self.services_booked
+        }
+
     # For flask-login
     def get_id(self):
         return str(self.email)
@@ -48,7 +58,7 @@ class ServiceProfessionals(db.Model):
     password = db.Column(db.String, nullable=False)
     date_created = db.Column(db.DateTime, default=db.func.now())
     description = db.Column(db.String, nullable=False)
-    service_type = db.Column(db.String, nullable=False)
+    service_type = db.Column(db.Integer, nullable=False)
     experience = db.Column(db.Integer, nullable=False, default=0)
     services_completed = db.Column(db.Integer, nullable=False, default=0)
     admin_approved = db.Column(db.Integer, nullable=False, default=0)
@@ -70,3 +80,33 @@ class ServiceProfessionals(db.Model):
     # For flask-login
     def get_id(self):
         return str(self.email)
+
+class CustomerRequests(db.Model):
+    __tablename__ = 'CustomerRequests'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    customer_id = db.Column(db.String, db.ForeignKey('Customers.email'), nullable=False)
+    serviceProfessional_id = db.Column(db.String, db.ForeignKey('ServiceProfessionals.email'), nullable=False)
+    service_type = db.Column(db.Integer, db.ForeignKey('Services.id'), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    for_date = db.Column(db.DateTime, nullable=False)
+    description = db.Column(db.String)
+    status = db.Column(db.Integer, nullable=False, default=0)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'customer_id': self.customer_id,
+            'customer_name': Customers.query.filter_by(email=self.customer_id).first().name,
+            'serviceProfessional_id': self.serviceProfessional_id,
+            'serviceProfessional_name': ServiceProfessionals.query.filter_by(email=self.serviceProfessional_id).first().name,
+            'serviceProfessional_description': ServiceProfessionals.query.filter_by(email=self.serviceProfessional_id).first().description,
+            'service_type': self.service_type,
+            'service_name': Services.query.filter_by(id=self.service_type).first().name,
+            'price': self.price,
+            'created_at': self.created_at.strftime('%Y-%m-%d'),
+            'for_date': self.for_date.strftime('%Y-%m-%d'),
+            'for_day': self.for_date.strftime('%A'),
+            'description': self.description,
+            'status': self.status
+        }

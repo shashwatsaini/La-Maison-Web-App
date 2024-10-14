@@ -30,10 +30,10 @@ def login():
 
     if Customers.query.filter_by(email=email, password=password).first():
         token = generate_token(email)
-        return jsonify({'token': token}), 200
+        return jsonify({'token': token, 'user_type': 0}), 200
     elif ServiceProfessionals.query.filter_by(email=email, password=password).first():
         token = generate_token(email)
-        return jsonify({'token': token}), 200
+        return jsonify({'token': token, 'user_type': 1}), 200
     else:
         return jsonify('User not found.'), 404
 

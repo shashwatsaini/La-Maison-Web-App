@@ -34,7 +34,7 @@ export default ({
 
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 form-container">
-                    <form @submit.prevent="checkFormService" action="/addService" method="post">
+                    <form @submit.prevent="checkFormService" method="post">
                         <div class="mb-3">
                             <label for="InputName" class="form-label">Name</label>
                             <input type="text" class="form-control" id="InputDescription" v-model="name" required>
@@ -98,7 +98,6 @@ export default ({
                                 Email: {{ serviceProfessional.email }}
                             </p>
                         </div>
-
                     </div>
                 </div>
             </div>

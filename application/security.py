@@ -43,3 +43,8 @@ def token_required(f):
         return f(*args, **kwargs)
 
     return decorated
+
+# Gets email from token, once authenticated
+def get_email_from_token(token):
+    data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+    return data['email']
