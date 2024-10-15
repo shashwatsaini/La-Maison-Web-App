@@ -11,6 +11,13 @@ CustomerRequests_status = {
     2: 'Accepted'
 }
 
+ServiceRequests_status = {
+    0: 'Pending',
+    1: 'Rejected',
+    2: 'Completed',
+    3: 'Paid'
+}
+
 @app.get('/api/customer/')
 @token_required
 def getCustomer():
@@ -44,6 +51,36 @@ def deleteCustomerServiceRequests():
     db.session.commit()
 
     return jsonify('Service request deleted successfully'), 200
+
+# Completed service requests
+@app.get('/api/customer/requests/completed')
+@token_required
+def getCustomerCompletedServiceRequests():
+    token = request.headers['x-access-token']
+    customer_id = get_email_from_token(token)
+    service_requests = ServiceRequests.query.filter_by(customer_id=customer_id, status=2)
+    return jsonify([service_request.serialize() for service_request in service_requests]), 200
+
+@app.patch('/api/customer/requests/completed')
+@token_required
+def rateServiceProfessional():
+    id = request.json['id']
+    remark = request.json['remark']
+    rating = request.json['rating']
+
+    service_request = ServiceRequests.query.filter_by(id=id).first()
+    service_request.remark = remark
+    service_request.rating = rating
+
+    service_professional = ServiceProfessionals.query.filter_by(email=service_request.serviceProfessional_id).first()
+    if service_professional.services_completed == 1:
+        service_professional.rating = (service_professional.rating + rating) / (service_professional.services_completed + 1)
+    else:
+        service_professional.rating = ((service_professional.rating * (service_professional.services_completed)) + rating) / (service_professional.services_completed + 1)
+
+    db.session.commit()
+
+    return jsonify('Service request rated successfully'), 200
 
 # Pending service requests
 @app.get('/api/customer/service-professionals/requests')

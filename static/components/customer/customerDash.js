@@ -57,6 +57,67 @@ export default ({
             <seperator />
         </div>
 
+        <div v-if="completedServiceRequests[0]">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                    <h3>Your completed services are here, please proceed to payment.</h3>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="container">
+                <div class="row justify-content-center g-4">
+                    <div v-for="(request, index) in completedServiceRequests" class="col-3 col-md-4">
+                        <div class="card d-flex flex-row align-items-center p-3">
+                            <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
+                                <img :src="services[request.service_type - 1].icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 30px; padding: 10px;">
+                                <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                                    <button type="button" class="btn-customerWhite d-flex align-items-center justify-content-center mb-2 w-100">
+                                        $ {{ services[request.service_type - 1].price }}
+                                    </button>
+                                    <button type="button" class="btn d-flex align-items-center justify-content-center mb-2 w-100">
+                                        <i class="fa-regular fa-credit-card" style="margin-right: 10px;"></i> Pay
+                                    </button>
+                                    <button type="button" v-if="!request.rating" @click="completedServiceRequestView=request.id" class="btn d-flex align-items-center justify-content-center mb-2 w-100">
+                                        <i class="fa-regular fa-comments" style="margin-right: 10px;"></i> Review
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
+                                <h6 class="card-title">{{ request.serviceProfessional_name }},</h6>
+                                <h6 class="card-title">{{ request.service_name }} Service</h6>
+                                <br>
+                                <p class="card-text">{{ request.description }}</p>
+                                <p class="card-text">Booked for: {{ request.for_day }}, {{ request.for_date }}</p>
+                                <p class="card-text"><span class="logo-font">PROFESSIONNEL</span> description: {{ request.serviceProfessional_description }}</p>
+                            </div>
+                        </div>
+
+                        <div v-if="completedServiceRequestView == request.id" class="w-100">
+                            <br>
+                            <div class="card d-flex flex-column align-items-center p-3 h-100">
+                                <form @submit.prevent="checkFormCompletedServiceRequest" method="patch" class="w-100">
+                                    <div class="mb-3">
+                                        <label for="InputRemarks" class="form-label">Service Remarks</label>
+                                        <input type="text" class="form-control" id="InputRemarks" v-model="completedServiceRequest_remarks">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="InputRating" class="form-label">Service Rating</label>
+                                        <input type="number" class="form-control" id="InputRating" v-model="completedServiceRequest_rating" min=0 max=5 required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <seperator />
+        </div>
+
         <div v-if="customerRequests[0]">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
@@ -252,6 +313,20 @@ export default ({
     },
 
     methods: {
+        checkFormCompletedServiceRequest: function(e) {
+            var check = 1
+            if (!this.completedServiceRequest_rating) {
+                check = 0
+            }
+
+            if (check == 0) {
+                e.preventDefault()
+                alert('Invalid details. Please try again.')
+            } else {
+                this.handleCompletedServiceRequest()
+            }
+        },
+
         checkFormServiceProfessionalBook: function(e) {
             var check = 1
             if (!this.serviceProfessional_book_description || !this.serviceProfessional_book_date) {
@@ -288,6 +363,39 @@ export default ({
 
         getToken: function() {
             return localStorage.getItem('token')
+        },
+
+        async handleCompletedServiceRequest() {
+            const formData = {
+                id: this.completedServiceRequestView,
+                remark: this.completedServiceRequest_remarks,
+                rating: this.completedServiceRequest_rating
+            }
+
+            try {
+                const response = await fetch('api/customer/requests/completed', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify(formData)
+                })
+
+                if (response.ok) {
+                    alert('Review submitted successfully. Thank you for your feedback.')
+                    window.location.href = '/customerDash'
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Error submitting review.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
         },
 
         async handleServiceProfessionalBook() {
@@ -449,6 +557,17 @@ export default ({
             const serviceRequests = await response.json()
             this.serviceRequests = serviceRequests
         },
+
+        async getCompletedServiceRequests() {
+            const response = await fetch('/api/customer/requests/completed', {
+                headers: {
+                    'x-access-token': this.token
+                }
+            })
+
+            const completedServiceRequests = await response.json()
+            this.completedServiceRequests = completedServiceRequests
+        },
         
         async getCustomerRequests() {
             const response = await fetch('/api/customer/service-professionals/requests', {
@@ -474,8 +593,13 @@ export default ({
             customer: [],
             serviceProfessionals: [],
             serviceRequests: [],
+            completedServiceRequests: [],
             customerRequests: [],
             serviceView: 0,
+
+            completedServiceRequestView: 0,
+            completedServiceRequest_remarks: '',
+            completedServiceRequest_rating: 5,
 
             modifyCustomerRequestView: 0,
             modifyCustomerRequest_description: '',
@@ -518,6 +642,7 @@ export default ({
         this.getCustomer()
         this.getServiceProfessionals()
         this.getServiceRequests()
+        this.getCompletedServiceRequests()
         this.getCustomerRequests()
         this.getServices()
     }

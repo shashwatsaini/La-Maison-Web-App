@@ -15,6 +15,7 @@ ServiceRequests_status = {
     0: 'Pending',
     1: 'Rejected',
     2: 'Completed',
+    3: 'Paid'
 }
 
 @app.get('/api/service-professional')
@@ -39,6 +40,9 @@ def completeServiceRequest():
     id = request.json['id']
     service_request = ServiceRequests.query.filter_by(id=id).first()
     service_request.status = 2
+
+    service_professional = ServiceProfessionals.query.filter_by(email=service_request.serviceProfessional_id).first()
+    service_professional.services_completed += 1
     db.session.commit()
     return jsonify('Service request completed successfully'), 200
 

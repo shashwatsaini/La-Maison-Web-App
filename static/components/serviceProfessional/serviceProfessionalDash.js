@@ -209,6 +209,7 @@ export default ({
 
             if (response.ok) {
                 alert('Request completed successfully.')
+                window.location.reload()
                 this.getServiceRequests()
             } else {
                 alert('Failed to complete request.')
@@ -227,6 +228,7 @@ export default ({
 
             if (response.ok) {
                 alert('Request accepted successfully.')
+                window.location.reload()
                 this.getCustomerRequests()
             } else {
                 alert('Failed to accept request.')
@@ -245,6 +247,7 @@ export default ({
 
             if (response.ok) {
                 alert('Request rejected successfully.')
+                window.location.reload()
                 this.getCustomerRequests()
             } else {
                 alert('Failed to reject request.')

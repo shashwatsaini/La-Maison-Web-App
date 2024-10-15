@@ -62,6 +62,7 @@ class ServiceProfessionals(db.Model):
     experience = db.Column(db.Integer, nullable=False, default=0)
     services_completed = db.Column(db.Integer, nullable=False, default=0)
     admin_approved = db.Column(db.Integer, nullable=False, default=0)
+    rating = db.Column(db.Float, nullable=False, default=5)
 
     def serialize(self):
         return {
@@ -71,6 +72,7 @@ class ServiceProfessionals(db.Model):
             'description': self.description,
             'service_type': self.service_type,
             'experience': self.experience,
+            'rating': self.rating,
             'services_completed': self.services_completed,
             'admin_approved': self.admin_approved,
             'service_name': Services.query.filter_by(id=self.service_type).first().name,
@@ -92,6 +94,8 @@ class ServiceRequests(db.Model):
     for_date = db.Column(db.DateTime, nullable=False)
     description = db.Column(db.String)
     status = db.Column(db.Integer, nullable=False, default=0)
+    remark = db.Column(db.String)
+    rating = db.Column(db.Integer)
 
     def serialize(self):
         return {
@@ -109,7 +113,9 @@ class ServiceRequests(db.Model):
             'for_date': self.for_date.strftime('%Y-%m-%d'),
             'for_day': self.for_date.strftime('%A'),
             'description': self.description,
-            'status': self.status
+            'status': self.status,
+            'remark': self.remark,
+            'rating': self.rating
         }
 
 class CustomerRequests(db.Model):
