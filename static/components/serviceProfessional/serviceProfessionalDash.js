@@ -99,6 +99,67 @@ export default ({
             <seperator />
         </div>
 
+        <div v-if="completedServiceRequests[0]">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                    <h3>Your completed requests.</h3>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="container">
+                <div class="row justify-content-center g-4">
+                    <div v-for="(request, index) in completedServiceRequests" class="col-3 col-md-4">
+                        <div class="card d-flex flex-row align-items-center p-3">
+                            <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
+                                <img :src="services[request.service_type - 1].icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 10px; padding: 10px;">
+                                <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                                    <button type="button" class="btn-serviceProfessionalWhite d-flex align-items-center justify-content-center mb-2 w-100">
+                                        $ {{ services[request.service_type - 1].price }}
+                                    </button>
+                                    <button type="button" v-if="request.status == 2" class="btn d-flex align-items-center justify-content-center mb-2 w-100">
+                                        <i class="fa-regular fa-credit-card" style="margin-right: 10px;"></i> Payment Pending
+                                    </button>
+                                    <button type="button" v-if="request.status == 3" class="btn d-flex align-items-center justify-content-center mb-2 w-100">
+                                        <i class="fa-regular fa-credit-card" style="margin-right: 10px;"></i> Payment Completed
+                                    </button>
+                                    <button v-if="request.rating" type="button" class="btn btn-serviceProfessionalWhite d-flex align-items-center justify-content-center mb-2 w-100">
+                                        Rated {{ request.rating.toFixed(1) }} <i class="fa-regular fa-star"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
+                                <h6 class="card-title">{{ request.service_name }} Service</h6>
+                                <br>
+                                <p class="card-text">{{ request.description }}</p>
+                                <p class="card-text">Booked for: {{ request.for_day }}, {{ request.for_date }}</p>
+                                <p class="card-text"><span class="logo-font">PATRON</span> address: {{ request.customer_address }}</p>
+                                <button type="button" v-if="request.remark" @click="viewCompletedServiceRequest = request.id" class="btn btn-serviceProfessionalWhiteLarge d-flex align-items-center justify-content-center mb-2 w-100">
+                                    <i class="fa-regular fa-comments" style="margin-right: 10px;"></i> View Review
+                                </button>
+                            </div>
+                        </div>
+
+                        <div v-if="viewCompletedServiceRequest == request.id" class="w-100">
+                            <br>
+                            <div class="card d-flex flex-column align-items-center p-3 h-100">
+                                <form class="w-100">
+                                    <div class="mb-3">
+                                        <label for="InputRemarks" class="form-label">Service Remarks</label>
+                                        <input type="text" class="form-control" id="InputRemarks" :placeholder="request.remark" disabled>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <seperator />
+        </div>
+
         <div v-if="services[0]">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
@@ -220,6 +281,17 @@ export default ({
             const serviceRequests = await response.json()
             this.serviceRequests = serviceRequests
         },
+
+        async getCompletedServiceRequests() {
+            const response = await fetch('/api/service-professionals/requests/completed', {
+                headers: {
+                    'x-access-token': this.token
+                }
+            })
+
+            const completedServiceRequests = await response.json()
+            this.completedServiceRequests = completedServiceRequests
+        },
         
         async getCustomerRequests() {
             const response = await fetch('/api/service-professionals/customer/requests', {
@@ -301,6 +373,10 @@ export default ({
             token: '',
             professional: [],
             serviceRequests: [],
+
+            completedServiceRequests: [],
+            viewCompletedServiceRequest: 0
+            ,
             customerRequests: [],
             serviceView: 0,
 
@@ -336,6 +412,7 @@ export default ({
 
         this.getServiceProfessional()
         this.getServiceRequests()
+        this.getCompletedServiceRequests()
         this.getCustomerRequests()
         this.getServices()
     }

@@ -79,3 +79,17 @@
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
 }
 
+.btn-serviceProfessionalWhiteLarge {
+    flex: 1;
+    background-color: white;
+    color: #000;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px 15px;
+}
+
+.btn-serviceProfessionalWhite:hoverLarge {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+

@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from flask import current_app as app
 from flask import jsonify, request, render_template
+from sqlalchemy import or_
 from application.models import db, Admins, Services, ServiceProfessionals, Customers, ServiceRequests, CustomerRequests
 from application.security import generate_token, token_required, get_email_from_token
 
@@ -45,6 +46,14 @@ def completeServiceRequest():
     service_professional.services_completed += 1
     db.session.commit()
     return jsonify('Service request completed successfully'), 200
+
+@app.get('/api/service-professionals/requests/completed')
+@token_required
+def getCompletedServiceProfessionalRequests():
+    token = request.headers['x-access-token']
+    serviceProfessional_id = get_email_from_token(token)
+    customer_requests = ServiceRequests.query.filter_by(serviceProfessional_id=serviceProfessional_id).filter(or_(ServiceRequests.status == 2, ServiceRequests.status == 3))
+    return jsonify([customer_request.serialize() for customer_request in customer_requests]), 200
 
 @app.get('/api/service-professionals/customer/requests')
 @token_required
