@@ -99,6 +99,41 @@ export default ({
             <seperator />
         </div>
 
+        <div v-if="services[0]">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                    <h3>Your profile card.</h3>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row justify-content-center">
+                <div class="card d-flex flex-row align-items-center p-3" style="width: 25%;">
+                    <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
+                        <img :src="services[professional.service_type - 1].icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 170px; padding: 10px;">
+                        <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                            <button type="button" class="btn-serviceProfessionalWhite d-flex align-items-center justify-content-center mb-2 w-100">
+                                $ {{ services[professional.service_type - 1].price }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
+                    <h6 class="card-title"><span style="margin-right: 6%;">{{ professional.name }}</span> {{ professional.rating.toFixed(1) }} <i class="fa-regular fa-star"></i></h6>
+                        <h6 class="card-title">{{ professional.service_name }} Service</h6>
+                        <br>
+                        <p class="card-text">{{ professional.description }}</p>
+                        <p class="card-text"><span class="logo-font">PROFESSIONNEL</span> description: {{ professional.description }}</p>
+                        <p class="card-text">Services completed: {{ professional.services_completed }}</p>
+                        <p class="card-text">Experience: {{ professional.experience }} months</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <seperator />
+
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 d-flex justify-content-center">
                 <h3 style="margin-right: 6%;"><span class="logo-font" style="font-size: 1.15em;">10,000 + PATRONS.</span></h3>

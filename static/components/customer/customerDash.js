@@ -42,7 +42,7 @@ export default ({
                             </div>
 
                             <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
-                                <h6 class="card-title">{{ request.serviceProfessional_name }},</h6>
+                                <h6 class="card-title"><span style="margin-right: 6%;">{{ request.serviceProfessional_name }}</span> {{ request.serviceProfessional_rating.toFixed(1) }} <i class="fa-regular fa-star"></i></h6>
                                 <h6 class="card-title">{{ request.service_name }} Service</h6>
                                 <br>
                                 <p class="card-text">{{ request.description }}</p>
@@ -86,7 +86,7 @@ export default ({
                             </div>
 
                             <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
-                                <h6 class="card-title">{{ request.serviceProfessional_name }},</h6>
+                                <h6 class="card-title"><span style="margin-right: 6%;">{{ request.serviceProfessional_name }}</span> {{ request.serviceProfessional_rating.toFixed(1) }} <i class="fa-regular fa-star"></i></h6>
                                 <h6 class="card-title">{{ request.service_name }} Service</h6>
                                 <br>
                                 <p class="card-text">{{ request.description }}</p>
@@ -144,7 +144,7 @@ export default ({
                             </div>
 
                             <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
-                                <h6 class="card-title">{{ request.serviceProfessional_name }},</h6>
+                                <h6 class="card-title"><span style="margin-right: 6%;">{{ request.serviceProfessional_name }}</span> {{ request.serviceProfessional_rating.toFixed(1) }} <i class="fa-regular fa-star"></i></h6>
                                 <h6 class="card-title">{{ request.service_name }} Service</h6>
                                 <br>
                                 <p class="card-text">{{ request.description }}</p>
@@ -223,7 +223,7 @@ export default ({
                             </div>
 
                             <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
-                                <h6 class="card-title">{{ serviceProfessional.name }}</h6>
+                                <h6 class="card-title"><span style="margin-right: 6%;">{{ serviceProfessional.name }}</span> {{ serviceProfessional.rating.toFixed(1) }} <i class="fa-regular fa-star"></i></h6>
                                 <p class="card-text">{{ serviceProfessional.description }}</p>
                                 <p class="card-text">
                                     Email: {{ serviceProfessional.email }}
