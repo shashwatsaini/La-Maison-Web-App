@@ -32,6 +32,13 @@ def getServiceProfessionals():
     service_professionals = ServiceProfessionals.query.filter_by(admin_approved=1)
     return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
 
+@app.get('/api/customer/service-professionals/search')
+@token_required
+def searchServiceProfessionals():
+    searchQuery = request.headers['searchQuery']
+    service_professionals = ServiceProfessionals.query.filter(ServiceProfessionals.admin_approved==1, ServiceProfessionals.name.like(f"{searchQuery}%")).all()
+    return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
+
 # Accepted service requests
 @app.get('/api/customer/requests')
 @token_required

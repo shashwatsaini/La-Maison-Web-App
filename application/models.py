@@ -76,6 +76,7 @@ class ServiceProfessionals(db.Model):
             'services_completed': self.services_completed,
             'admin_approved': self.admin_approved,
             'service_name': Services.query.filter_by(id=self.service_type).first().name,
+            'service_price': Services.query.filter_by(id=self.service_type).first().price,
             'icon_path': Services.query.filter_by(id=self.service_type).first().icon_path
         }
 

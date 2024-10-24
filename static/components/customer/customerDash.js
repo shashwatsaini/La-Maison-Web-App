@@ -180,13 +180,13 @@ export default ({
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
                 <h3>Book a service.</h3>
-                <br><br>
+                <br><br><br>
             </div>
         </div>
 
         <div class="row justify-content-center">
             <div class="col-12 col-md-9 d-flex flex-wrap justify-content-center">
-                <div v-for="(service, index) in services" @click="serviceView=index+1" class="card button-like-customerDash d-flex flex-row align-items-center p-3" style="width: 18rem; margin: 10px;">
+                <div v-for="(service, index) in services" @click="setServiceView(index+1)" class="card button-like-customerDash d-flex flex-row align-items-center p-3" style="width: 18rem; margin: 10px;">
                     <img :src="service.icon_path" alt="service logo" class="card-img-left" style="width: 50px; height: 50px; margin-right: 10px;">
                     <div class="card-body p-0">
                         <h5 class="card-title">{{ service.name }}</h5>
@@ -254,7 +254,85 @@ export default ({
                     </div>
                 </div>
             </div>
+            <br>
         </div>
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                <h3>Or, let's search.</h3>
+                <br><br>
+            </div>
+        </div>
+
+        <br>
+
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                <form class="w-100">
+                    <div class="mb-3">
+                        <input type="text" v-model="searchQuery" class="form-control" id="InputSearch" placeholder="Search by service or location." required>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <br>
+
+        <div v-if="searchServiceProfessionals[0]" class="container">
+            <div class="row justify-content-center g-4">
+                <div v-for="(serviceProfessional, index) in searchServiceProfessionals" class="col-3 col-md-4">
+                    <div>
+                        <div class="card d-flex flex-row align-items-center p-3 h-100">
+                            <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
+                                <img :src="serviceProfessional.icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 30px; padding: 10px;">
+                                <div class="d-flex flex-column justify-content-center align-items-center w-100">
+                                    <button type="button" @click="searchServiceProfessional_book = serviceProfessional.email" class="btn d-flex align-items-center justify-content-center mb-2 w-100">
+                                        <i class="fa fa-check" style="margin-right: 10px;"></i> Book
+                                    </button>
+                                    <button type="button" class="btn-customerWhite d-flex align-items-center justify-content-center mb-2 w-100">
+                                        $ {{ serviceProfessional.service_price }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
+                                <h6 class="card-title"><span style="margin-right: 6%;">{{ serviceProfessional.name }}</span> {{ serviceProfessional.rating.toFixed(1) }} <i class="fa-regular fa-star"></i></h6>
+                                <p class="card-text">{{ serviceProfessional.description }}</p>
+                                <p class="card-text">
+                                    Email: {{ serviceProfessional.email }}
+                                    <br>
+                                    Experience: {{ serviceProfessional.experience }} months
+                                    <br>
+                                    Services completed: {{ serviceProfessional.services_completed }}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div v-if="searchServiceProfessional_book == serviceProfessional.email" class="w-100">
+                            <br>
+                            <div class="card d-flex flex-column align-items-center p-3 h-100">
+                                <form @submit.prevent="checkFormSearchServiceProfessionalBook" method="post" class="w-100">
+                                    <div class="mb-3">
+                                        <label for="InputDescription" class="form-label">Service Description</label>
+                                        <input type="text" class="form-control" id="InputDescription" v-model="searchServiceProfessional_book_description" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="InputDate" class="form-label">Service Date</label>
+                                        <input type="date" class="form-control" id="InputDescription" v-model="searchServiceProfessional_book_date" required>
+                                    </div>
+                                    <input type="hidden" id="InputServiceName" :value="serviceProfessional.service_type">
+                                    <input type="hidden" id="InputServicePrice" :value="serviceProfessional.service_price">
+                                    <button type="submit" class="btn btn-primary w-100">Submit</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+        </div>
+
 
         <seperator />
 
@@ -313,6 +391,13 @@ export default ({
     },
 
     methods: {
+        setServiceView: function(index) {
+            if (this.serviceView == index)
+                this.serviceView = 0
+            else
+                this.serviceView = index
+        },
+
         checkFormCompletedServiceRequest: function(e) {
             var check = 1
             if (!this.completedServiceRequest_rating) {
@@ -338,6 +423,25 @@ export default ({
                 alert('Invalid details. Please try again.')
             } else {
                 this.handleServiceProfessionalBook()
+            }
+        },
+
+        checkFormSearchServiceProfessionalBook: function(e) {
+            var check = 1
+            const form = e.target
+
+            this.searchServiceProfessional_book_service_type = form.querySelector("#InputServiceName").value
+            this.searchServiceProfessional_book_service_price = form.querySelector("#InputServicePrice").value
+            
+            if (!this.searchServiceProfessional_book_description || !this.searchServiceProfessional_book_date || !this.searchServiceProfessional_book_service_type || !this.searchServiceProfessional_book_service_price) {
+                check = 0
+            }
+
+            if (check == 0) {
+                e.preventDefault()
+                alert('Invalid details. Please try again.')
+            } else {
+                this.handleSearchServiceProfessionalBook()
             }
         },
 
@@ -405,6 +509,41 @@ export default ({
                 price: this.services[this.serviceView - 1].price,
                 for_date: this.serviceProfessional_book_date,
                 description: this.serviceProfessional_book_description
+            }
+
+            try {
+                const response = await fetch('api/customer/service-professionals/requests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify(formData)
+                })
+
+                if (response.ok) {
+                    alert('Service booked successfully.')
+                    window.location.href = '/customerDash'
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Error booking service.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async handleSearchServiceProfessionalBook(service_type, service_price) {
+            const formData = {
+                serviceProfessional_id: this.searchServiceProfessional_book,
+                service_type: this.searchServiceProfessional_book_service_type,
+                price: this.searchServiceProfessional_book_service_price,
+                for_date: this.searchServiceProfessional_book_date,
+                description: this.searchServiceProfessional_book_description
             }
 
             try {
@@ -522,6 +661,7 @@ export default ({
         
             const serviceProfessionals = await response.json();
         
+            // Group service professionals by service type
             serviceProfessionals.sort((a, b) => {
                 if (a.service_type < b.service_type) {
                     return -1;
@@ -543,9 +683,35 @@ export default ({
         
                 groupedServiceProfessionals[service_type].push(professional);
             });
+
+            // Sort service professionals by rating
+            Object.keys(groupedServiceProfessionals).forEach(service_type => {
+                groupedServiceProfessionals[service_type].sort((a, b) => b.rating - a.rating);
+            });
         
             this.serviceProfessionals = groupedServiceProfessionals;
-        },    
+        },  
+        
+        async processSearchQuery() {
+            if(this.searchQuery != '') {
+                const response = await fetch('/api/customer/service-professionals/search', {
+                    headers: {
+                        'x-access-token': this.token,
+                        'searchQuery': this.searchQuery
+                    }
+                })
+
+                const searchServiceProfessionals = await response.json()
+
+                // Sort service professionals by rating
+                searchServiceProfessionals.sort((a, b) => b.rating - a.rating);
+
+                this.searchServiceProfessionals = searchServiceProfessionals
+                console.log(this.searchServiceProfessionals)
+            } else {
+                this.searchServiceProfessionals = []
+            }
+        },
         
         async getServiceRequests() {
             const response = await fetch('/api/customer/requests', {
@@ -609,6 +775,14 @@ export default ({
             serviceProfessional_book_description: '',
             serviceProfessional_book_date: '',
 
+            searchQuery: '',
+            searchServiceProfessionals: [],
+            searchServiceProfessional_book: '',
+            searchServiceProfessional_book_description: '',
+            searchServiceProfessional_book_date: '',
+            searchServiceProfessional_book_service_type: 0,
+            searchServiceProfessional_book_service_price: 0,
+
             services: [],
             reviews: [
                 {
@@ -645,5 +819,11 @@ export default ({
         this.getCompletedServiceRequests()
         this.getCustomerRequests()
         this.getServices()
+    },
+
+    watch: {
+        searchQuery(newValue, oldValue) {
+            this.processSearchQuery()
+        }
     }
 })
