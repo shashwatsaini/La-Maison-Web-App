@@ -31,6 +31,48 @@ def addService():
 
     return jsonify('Service added successfully'), 200
 
+@app.patch('/api/admin/service')
+@token_required
+def modifyService():
+    id = int(request.form.get('id'))
+    service = Services.query.filter_by(id=id).first()
+    if request.form.get('name'):
+        name = request.form.get('name')
+        service.name = name
+    if request.form.get('description'):
+        description = request.form.get('description')
+        service.description = description
+    if request.form.get('price'):
+        price = int(request.form.get('price'))
+        service.price = price
+    if request.form.get('timeRequired'):
+        time_required = int(request.form.get('timeRequired'))
+        service.time_required = time_required
+    icon_path = ''
+
+    try:
+        if request.files:
+            icon = request.files['icon']
+            if icon:
+                with open(os.path.join(app.config['SERVICE_ICONS_UPLOAD_FOLDER'], icon.filename), 'wb') as f:
+                    f.write(icon.read())
+                icon_path = os.path.join(app.config['SERVICE_ICONS_UPLOAD_FOLDER'], icon.filename)
+                service.icon_path = icon_path
+            else:
+                pass
+    except Exception as e:
+        return jsonify({'message': 'Icon upload failed.'}), 400
+
+    db.session.commit()
+
+    return jsonify('Service modified successfully'), 200
+
+@app.get('/api/admin/service')
+@token_required
+def getServices():
+    services = Services.query.all()
+    return jsonify([service.serialize() for service in services]), 200
+
 @app.get('/api/admin/service-professionals/')
 @token_required
 def getUnapprovedServiceProfessionals():

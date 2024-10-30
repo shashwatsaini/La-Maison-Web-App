@@ -58,6 +58,7 @@ class ServiceProfessionals(db.Model):
     password = db.Column(db.String, nullable=False)
     date_created = db.Column(db.DateTime, default=db.func.now())
     description = db.Column(db.String, nullable=False)
+    location = db.Column(db.String)
     service_type = db.Column(db.Integer, nullable=False)
     experience = db.Column(db.Integer, nullable=False, default=0)
     services_completed = db.Column(db.Integer, nullable=False, default=0)
@@ -70,6 +71,7 @@ class ServiceProfessionals(db.Model):
             'name': self.name,
             'date_created': self.date_created,
             'description': self.description,
+            'location': self.location,
             'service_type': self.service_type,
             'experience': self.experience,
             'rating': self.rating,

@@ -231,6 +231,8 @@ export default ({
                                     Experience: {{ serviceProfessional.experience }} months
                                     <br>
                                     Services completed: {{ serviceProfessional.services_completed }}
+                                    <br>
+                                    Location: {{serviceProfessional.location}}
                                 </p>
                             </div>
                         </div>
@@ -304,6 +306,8 @@ export default ({
                                     Experience: {{ serviceProfessional.experience }} months
                                     <br>
                                     Services completed: {{ serviceProfessional.services_completed }}
+                                    <br>
+                                    Location: {{ serviceProfessional.location }}
                                 </p>
                             </div>
                         </div>

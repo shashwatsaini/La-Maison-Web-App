@@ -66,10 +66,11 @@ def register():
             name = data['name']
             password = data['password']
             description = data['description']
+            location = data['location']
             service_type = data['serviceType']
             admin_approved = 0
 
-            service_professional = ServiceProfessionals(email=email, name=name, password=password, description=description, service_type=service_type, admin_approved=admin_approved)
+            service_professional = ServiceProfessionals(email=email, name=name, password=password, description=description, location=location, service_type=service_type, admin_approved=admin_approved)
             db.session.add(service_professional)
             db.session.commit()
             return jsonify('Service professional created successfully'), 200

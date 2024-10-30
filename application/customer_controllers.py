@@ -37,6 +37,7 @@ def getServiceProfessionals():
 def searchServiceProfessionals():
     searchQuery = request.headers['searchQuery']
     service_professionals = ServiceProfessionals.query.filter(ServiceProfessionals.admin_approved==1, ServiceProfessionals.name.like(f"{searchQuery}%")).all()
+    service_professionals += ServiceProfessionals.query.filter(ServiceProfessionals.admin_approved==1, ServiceProfessionals.location.like(f"%{searchQuery}%")).all()
     return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
 
 # Accepted service requests

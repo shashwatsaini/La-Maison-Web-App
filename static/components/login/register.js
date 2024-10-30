@@ -2,7 +2,7 @@ import Navbar from '../navbar.js'
 import customFooter from '../nonStickyFooter.js'
 
 export default ({
-    template: `
+    template: /*html*/`
         <Navbar />
         
         <div class="row justify-content-center">
@@ -60,6 +60,10 @@ export default ({
                     <div class="mb-3">
                         <label for="InputDescription" class="form-label">Description</label>
                         <input type="text" class="form-control" id="InputDescription" v-model="description" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="InputLoction" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="InputLocation" v-model="location" required>
                     </div>
                     <div class="mb-3">
                         <label for="InputServiceType" class="form-label">Service Type</label>
@@ -170,6 +174,7 @@ export default ({
                     password: this.password,
                     name: this.name,
                     description: this.description,
+                    location: this.location,
                     serviceType: this.serviceType,
                     registerType: this.registerType
                 }
@@ -215,6 +220,7 @@ export default ({
             name: '',
             address: '',
             description: '',
+            location: '',
             serviceType: 0,
             services: []
         }
