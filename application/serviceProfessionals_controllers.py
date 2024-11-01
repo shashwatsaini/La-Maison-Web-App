@@ -19,6 +19,13 @@ ServiceRequests_status = {
     3: 'Paid'
 }
 
+ServiceProfessional_admin_approved = {
+    0: 'Pending',
+    1: 'Approved',
+    2: 'Under Review',
+    3: 'Deleted'
+}
+
 @app.get('/api/service-professional')
 @token_required
 def getServiceProfessional():

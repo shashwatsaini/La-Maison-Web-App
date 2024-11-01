@@ -92,7 +92,8 @@ export default ({
                         window.location.href = '/serviceProfessionalDash'
                     }
                 } else {
-                    alert('Invalid credentials. Please try again.')
+                    const { message, user_type } = await response.json()
+                    alert(message)
                 }
             } catch (error) {
                 alert('Error:', error)

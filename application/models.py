@@ -36,7 +36,7 @@ class Customers(db.Model):
     password = db.Column(db.String, nullable=False)
     date_created = db.Column(db.DateTime, default=db.func.now())
     address = db.Column(db.String, nullable=False)
-    services_booked = db.Column(db.Integer, nullable=False, default=0)
+    admin_action = db.Column(db.Integer, nullable=True, default=0)
 
     def serialize(self):
         return {
@@ -44,7 +44,9 @@ class Customers(db.Model):
             'name': self.name,
             'date_created': self.date_created,
             'address': self.address,
-            'services_booked': self.services_booked
+            'services_booked': ServiceRequests.query.filter_by(customer_id=self.email).count(),
+            'services_completed': ServiceRequests.query.filter_by(customer_id=self.email, status=2).count(),
+            'admin_action': self.admin_action
         }
 
     # For flask-login
@@ -76,6 +78,9 @@ class ServiceProfessionals(db.Model):
             'experience': self.experience,
             'rating': self.rating,
             'services_completed': self.services_completed,
+            'services_booked': ServiceRequests.query.filter_by(serviceProfessional_id=self.email).count(),
+            'services_requested': CustomerRequests.query.filter_by(serviceProfessional_id=self.email).count(),
+            'services_rejected': CustomerRequests.query.filter_by(serviceProfessional_id=self.email, status=1).count(),
             'admin_approved': self.admin_approved,
             'service_name': Services.query.filter_by(id=self.service_type).first().name,
             'service_price': Services.query.filter_by(id=self.service_type).first().price,

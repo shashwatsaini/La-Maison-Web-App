@@ -24,6 +24,8 @@ export default ({
 
         <seperator />
 
+        <!-- Create a service -->
+
         <div v-if="viewType==1">
             <div class="row justify-content-center">
                 <div  class="col-12 col-md-6 d-flex justify-content-center">
@@ -65,6 +67,8 @@ export default ({
             </div>
         </div>
 
+        <!-- Modify a service -->
+
         <div v-if="viewType==2">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 d-flex justify-content-center">
@@ -76,7 +80,7 @@ export default ({
 
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 form-container">
-                    <form @submit.prevent="handleFormModifyServiceSubmit" method="post">
+                    <form @submit.prevent="handleFormModifyServiceSubmit" method="patch">
                         <div class="mb-3">
                             <label for="SelectService" class="form-label">Service Name</label>
                             <select class="form-control" id="SelectService" v-model="modifyService" required>
@@ -108,11 +112,17 @@ export default ({
                         <div class="d-flex justify-content-center">
                             <button type="submit" class="btn">Submit</button>
                         </div>
+                        <br>
+                        <div class="d-flex justify-content-center">
+                            <button type="button" class="btn bg-danger" @click="handleFormDeleteServiceSubmit">Delete Service</button>
+                        </div>
                     </form>
                 </div>
             </div>
             
         </div>
+
+        <!-- Approve new service professionals -->
 
         <div v-if="viewType==3">
             <div class="row justify-content-center">
@@ -155,6 +165,136 @@ export default ({
                                 <br>
                                 Email: {{ serviceProfessional.email }}
                             </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review service professionals -->
+
+        <div v-if="viewType==4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center">
+                    <h3>Review  <span class="logo-font">PROFESSIONNELS</span>.</h3>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                    <form class="w-100">
+                        <div class="mb-3">
+                            <input type="text" v-model="searchServiceProfessionalQuery" class="form-control" id="InputSearch" placeholder="Search by service or location." required>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div v-for="serviceProfessional in searchServiceProfessionals" class="col-12 col-md-5 d-flex justify-content-center">
+                        <div class="card d-flex flex-row align-items-center p-3" style="width: 90%; margin: 10px;">
+                            <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
+                                <img :src="serviceProfessional.icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 30px; padding: 10px;">
+
+                                <div class="d-flex flex-column justify-content-center align-items-center w-100" style="flex-grow: 1;">  
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <i class="fas fa-check-circle" style="font-size: 24px; color: green;"></i> {{ serviceProfessional.services_completed }}
+                                        <i class="fas fa-calendar-check" style="font-size: 24px; color: black; margin-left: 3px;"></i> {{ serviceProfessional.services_booked }}
+                                        <i class="fas fa-times-circle" style="font-size: 24px; color: red; margin-left: 3px;"></i> {{ serviceProfessional.services_rejected }}
+                                    </div>
+                                    <br>
+                                    <button v-if="serviceProfessional.admin_approved == 1" type="button" @click="handleBlockServiceProfessional(serviceProfessional.email)" class="btn d-flex align-items-center justify-content-center mb-2">
+                                        <i class="fa fa-ban"></i>
+                                    </button>
+
+                                    <button v-if="serviceProfessional.admin_approved == 2" type="button" @click="handleUnblockServiceProfessional(serviceProfessional.email)" class="btn bg-success d-flex align-items-center justify-content-center mb-2">
+                                        <i class="fa fa-check"></i>
+                                    </button>
+
+                                    <button v-if="serviceProfessional.admin_approved == 2" type="button" @click="handleDeleteServiceProfessional(serviceProfessional.email)" class="btn bg-danger d-flex align-items-center justify-content-center mb-2">
+                                        <i class="fa fa-ban"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
+                                <h6 class="card-title"><span style="margin-right: 6%;">{{ serviceProfessional.name }}</span> {{ serviceProfessional.rating.toFixed(1) }} <i class="fa-regular fa-star"></i></h6>
+                                <p class="card-text">{{ serviceProfessional.description }}</p>
+                                <p class="card-text">
+                                    Email: {{ serviceProfessional.email }}
+                                    <br>
+                                    Experience: {{ serviceProfessional.experience }} months
+                                    <br>
+                                    Location: {{ serviceProfessional.location }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Review patrons -->
+
+        <div v-if="viewType==5">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center">
+                    <h3>Review  <span class="logo-font">PATRONS</span>.</h3>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
+                    <form class="w-100">
+                        <div class="mb-3">
+                            <input type="text" v-model="searchCustomerQuery" class="form-control" id="InputSearch" placeholder="Search by customer or location." required>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div v-for="customer in searchCustomers" class="col-12 col-md-5 d-flex justify-content-center">
+                        <div class="card d-flex flex-row align-items-center p-3" style="width: 90%; margin: 10px;">
+                            <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
+                                <div class="d-flex flex-column justify-content-center align-items-center w-100" style="flex-grow: 1;">  
+                                    <div style="display: flex; gap: 10px; align-items: center;" style="margin-bottom: 12px;">
+                                        <i class="fas fa-check-circle" style="font-size: 24px; color: green;"></i> {{ customer.services_completed }}
+                                        <i class="fas fa-calendar-check" style="font-size: 24px; color: black; margin-left: 3px;"></i> {{ customer.services_booked }}
+                                    </div>
+
+                                    <button v-if="customer.admin_action == 0" type="button" @click="handleBlockCustomer(customer.email)" class="btn d-flex align-items-center justify-content-center mb-2">
+                                        <i class="fa fa-ban"></i>
+                                    </button>
+
+                                    <button v-if="customer.admin_action == 1" type="button" @click="handleUnblockCustomer(customer.email)" class="btn bg-success d-flex align-items-center justify-content-center mb-2">
+                                        <i class="fa fa-check"></i>
+                                    </button>
+
+                                    <button v-if="customer.admin_action == 1" type="button" @click="handleDeleteCustomer(customer.email)" class="btn bg-danger d-flex align-items-center justify-content-center mb-2">
+                                        <i class="fa fa-ban"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column justify-content-between" style="flex-grow: 1;">
+                                <h6 class="card-title"><span style="margin-right: 6%;">{{ customer.name }}</span></h6>
+                                <p class="card-text">
+                                    Email: {{ customer.email }}
+                                    <br>
+                                    Address: {{ customer.address }}
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -273,6 +413,274 @@ export default ({
                 alert('Error:', error)
             }
         },
+
+        async handleBlockServiceProfessional(email) {
+            try {
+                const response = await fetch('/api/admin/service-professionals/block', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Service professional blocked successfully.')
+                    this.processSearchServiceProfessionalQuery()
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async handleUnblockServiceProfessional(email) {
+            try {
+                const response = await fetch('/api/admin/service-professionals/unblock', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Service professional unblocked successfully.')
+                    this.processSearchServiceProfessionalQuery()
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async handleDeleteServiceProfessional(email) {
+            try {
+                const response = await fetch('/api/admin/service-professionals/block', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Service professional deleted successfully.')
+                    this.processSearchServiceProfessionalQuery()
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async handleFormDeleteServiceSubmit() {
+            try {
+                const response = await fetch('/api/admin/service', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        id: this.modifyService
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Service deleted successfully.')
+                    window.location.href = '/adminDash'
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+
+            window.location.href = '/adminDash'
+        },
+
+        async processSearchServiceProfessionalQuery() {
+            const response = await fetch('/api/admin/service-professionals/search', {
+                method: 'POST',
+                headers: {
+                    'x-access-token': this.token,
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify({query: this.searchServiceProfessionalQuery})
+            })
+
+            let searchServiceProfessionals = await response.json()
+
+            // Sort service professionals by rating
+            searchServiceProfessionals.sort((a, b) => -(b.rating - a.rating));
+
+            // Get blocked professionals first
+            const adminId2Professionals = []
+            const otherProfessionals = []
+
+            searchServiceProfessionals.forEach(professional => {
+                if (professional.admin_approved === 2) {
+                    adminId2Professionals.push(professional)
+                } else {
+                    otherProfessionals.push(professional)
+                }
+            });
+
+            searchServiceProfessionals = [...adminId2Professionals, ...otherProfessionals]
+
+            this.searchServiceProfessionals = searchServiceProfessionals
+        },
+
+        async handleBlockCustomer(email) {
+            try {
+                const response = await fetch('/api/admin/customers/block', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Customer blocked successfully.')
+                    this.processSearchCustomerQuery()
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async handleUnblockCustomer(email) {
+            try {
+                const response = await fetch('/api/admin/customers/unblock', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Customer unblocked successfully.')
+                    this.processSearchCustomerQuery()
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async handleDeleteCustomer(email) {
+            try {
+                const response = await fetch('/api/admin/customers/block', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Customer deleted successfully.')
+                    this.processSearchCustomerQuery()
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async processSearchCustomerQuery() {
+            const response = await fetch('/api/admin/customers/search', {
+                method: 'POST',
+                headers: {
+                    'x-access-token': this.token,
+                    'Content-Type': 'application/json'
+                },
+
+                body: JSON.stringify({query: this.searchCustomerQuery})
+            })
+
+            let searchCustomers = await response.json()
+
+            // Get blocked customers first
+            const adminAction1Customers = []
+            const otherCustomers = []
+
+            searchCustomers.forEach(customer => {
+                if (customer.admin_action === 1) {
+                    adminAction1Customers.push(customer)
+                } else {
+                    otherCustomers.push(customer)
+                }
+            });
+
+            searchCustomers = [...adminAction1Customers, ...otherCustomers]
+
+            this.searchCustomers = searchCustomers
+        }, 
 
         async getServices() {
             try {
@@ -402,7 +810,13 @@ export default ({
             modifyDescription: '',
             modifyPrice: 0,
             modifyTimeRequired: 0,
-            modifyIcon: null
+            modifyIcon: null,
+
+            searchServiceProfessionalQuery: '',
+            searchServiceProfessionals: [],
+
+            searchCustomerQuery: '',
+            searchCustomers: []
         }
     },
 
@@ -415,6 +829,8 @@ export default ({
 
         this.getServices()
         this.getUnapprovedServiceProfessionals()
+        this.processSearchServiceProfessionalQuery()
+        this.processSearchCustomerQuery()
     },
 
     watch: {
@@ -424,6 +840,14 @@ export default ({
             this.modifyDescription = service.description
             this.modifyPrice = service.price
             this.modifyTimeRequired = service.time_required
+        },
+
+        searchServiceProfessionalQuery: function() {
+            this.processSearchServiceProfessionalQuery()
+        },
+
+        searchCustomerQuery: function() {
+            this.processSearchCustomerQuery()
         }
     }
 })

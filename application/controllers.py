@@ -21,19 +21,30 @@ def adminLogin():
     else:
         return jsonify('User not found.'), 404
 
-# Not yet implemented
 @app.post('/api/login')
 def login():
     data = request.json
     email = data['email']
     password = data['password']
 
-    if Customers.query.filter_by(email=email, password=password).first():
+    if Customers.query.filter_by(email=email, password=password, admin_action = 0).first():
         token = generate_token(email)
         return jsonify({'token': token, 'user_type': 0}), 200
-    elif ServiceProfessionals.query.filter_by(email=email, password=password).first():
+    elif Customers.query.filter_by(email=email, password=password, admin_action = 1).first():
+        token = generate_token(email)
+        return jsonify({'message': 'User has been blocked and is under review. If you think this is a mistake, please contact the admin.', 'user_type': 0}), 405
+    elif Customers.query.filter_by(email=email, password=password, admin_action = 2).first():
+        token = generate_token(email)   
+        return jsonify({'message': 'User has been blocked and deleted, post review. If you think this is a mistake, please contact the admin.', 'user_type': 0}), 405 
+    elif ServiceProfessionals.query.filter_by(email=email, password=password, admin_approved = 1).first():
         token = generate_token(email)
         return jsonify({'token': token, 'user_type': 1}), 200
+    elif ServiceProfessionals.query.filter_by(email=email, password=password, admin_approved = 2).first():
+        token = generate_token(email)
+        return jsonify({'message': 'User has been blocked and is under review. If you think this is a mistake, please contact the admin.', 'user_type': 1}), 405
+    elif ServiceProfessionals.query.filter_by(email=email, password=password, admin_approved = 3).first():
+        token = generate_token(email)
+        return jsonify({'message': 'User has been blocked and deleted, post review. If you think this is a mistake, please contact the admin.', 'user_type': 1}), 405
     else:
         return jsonify('User not found.'), 404
 

@@ -711,7 +711,6 @@ export default ({
                 searchServiceProfessionals.sort((a, b) => b.rating - a.rating);
 
                 this.searchServiceProfessionals = searchServiceProfessionals
-                console.log(this.searchServiceProfessionals)
             } else {
                 this.searchServiceProfessionals = []
             }
