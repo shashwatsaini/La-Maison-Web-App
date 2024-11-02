@@ -1,9 +1,11 @@
 import os
+import json
 from datetime import datetime
 from flask import current_app as app
 from flask import jsonify, request, render_template
 from application.models import db, Admins, Services, ServiceProfessionals, Customers,ServiceRequests, CustomerRequests
 from application.security import generate_token, token_required, get_email_from_token
+from application.redis_controllers import createClient
 
 CustomerRequests_status = {
     0: 'Pending',
@@ -26,11 +28,19 @@ def getCustomer():
     customer = Customers.query.filter_by(email=email).first()
     return jsonify(customer.serialize()), 200
 
+# Redis cached
 @app.get('/api/customer/service-professionals/')
 @token_required
 def getServiceProfessionals():
-    service_professionals = ServiceProfessionals.query.filter_by(admin_approved=1)
-    return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
+    r = createClient()
+    service_professional_keys = r.keys('service_professional:*')
+    service_professionals = []
+    for key in service_professional_keys:
+        service_professional_json = r.get(key)
+        if service_professional_json:
+            service_professional_dict = json.loads(service_professional_json)
+            service_professionals.append(service_professional_dict)
+    return service_professionals, 200
 
 @app.get('/api/customer/service-professionals/search')
 @token_required

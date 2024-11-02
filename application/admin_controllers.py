@@ -1,8 +1,24 @@
 import os
 from flask import current_app as app
 from flask import jsonify, request, render_template
+from sqlalchemy import event
 from application.models import db, Admins, Services, ServiceRequests, ServiceProfessionals, Customers, CustomerRequests
 from application.security import generate_token, token_required
+from application.redis_controllers import updateServicesCache, updateServiceProfessionalsCache
+
+# Event listeners to update Redis cache
+
+@event.listens_for(Services, 'after_insert')
+@event.listens_for(Services, 'after_update')
+@event.listens_for(Services, 'after_delete')
+def update_services_cache(mapper, connection, target):
+    updateServicesCache()
+
+@event.listens_for(ServiceProfessionals, 'after_insert')
+@event.listens_for(ServiceProfessionals, 'after_update')
+@event.listens_for(ServiceProfessionals, 'after_delete')
+def update_services_cache(mapper, connection, target):
+    updateServiceProfessionalsCache()
 
 ServiceProfessional_admin_approved = {
     0: 'Pending',

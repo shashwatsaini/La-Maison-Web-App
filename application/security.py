@@ -3,11 +3,14 @@ from flask import current_app as app
 from flask import jsonify, request
 from application.models import db, Admins, ServiceProfessionals, Customers
 import jwt
+from datetime import datetime
 
 # Generate a token for the user
 def generate_token(email):
+    expiration = datetime.utcnow() + app.config['TOKEN_EXPIRATION']
     token = jwt.encode({
-        'email': email
+        'email': email,
+        'exp': expiration
     }, app.config['SECRET_KEY'], algorithm='HS256')
     return token
 
@@ -26,6 +29,8 @@ def token_required(f):
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
             email = data['email']
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token has expired, please login again.'}), 401
         except:
             return jsonify({'message': 'Token is invalid!'}), 401
 
