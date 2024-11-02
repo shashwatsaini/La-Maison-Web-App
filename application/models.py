@@ -45,7 +45,8 @@ class Customers(db.Model):
             'date_created': self.date_created,
             'address': self.address,
             'services_booked': ServiceRequests.query.filter_by(customer_id=self.email).count(),
-            'services_completed': ServiceRequests.query.filter_by(customer_id=self.email, status=2).count(),
+            'services_completed': ServiceRequests.query.filter_by(customer_id=self.email, status=2).count() + ServiceRequests.query.filter_by(customer_id=self.email, status=3).count(),
+            'services_paid': ServiceRequests.query.filter_by(customer_id=self.email, status=3).count(),
             'admin_action': self.admin_action
         }
 

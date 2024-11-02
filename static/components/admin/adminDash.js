@@ -271,6 +271,7 @@ export default ({
                                     <div style="display: flex; gap: 10px; align-items: center;" style="margin-bottom: 12px;">
                                         <i class="fas fa-check-circle" style="font-size: 24px; color: green;"></i> {{ customer.services_completed }}
                                         <i class="fas fa-calendar-check" style="font-size: 24px; color: black; margin-left: 3px;"></i> {{ customer.services_booked }}
+                                        <i class="fas fa-credit-card" style="font-size: 24px; color: black; margin-left: 3px;"></i> {{ customer.services_paid }}
                                     </div>
 
                                     <button v-if="customer.admin_action == 0" type="button" @click="handleBlockCustomer(customer.email)" class="btn d-flex align-items-center justify-content-center mb-2">

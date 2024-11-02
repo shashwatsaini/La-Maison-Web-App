@@ -1,12 +1,16 @@
 import Navbar from '../navbar.js'
 import customFooter from '../nonStickyFooter.js'
 import seperator from '../lineSeperator.js'
+import payments from './payment.js'
 
 export default ({
     template: /*html*/`
         <link rel="stylesheet" href="/static/css/customerDash.css">
         <Navbar />
 
+        <payments :payment="payment" :token="token" v-if="paymentsView == 1" />
+
+        <div v-if="paymentsView == 0">
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 d-flex justify-content-center align-items-center">
                 <h3 style="margin-right: 6%;">Welcome, <span class="logo-font">PATRON</span> {{ customer.name }}</h3>
@@ -76,7 +80,7 @@ export default ({
                                     <button type="button" class="btn-customerWhite d-flex align-items-center justify-content-center mb-2 w-100">
                                         $ {{ services[request.service_type - 1].price }}
                                     </button>
-                                    <button type="button" class="btn d-flex align-items-center justify-content-center mb-2 w-100">
+                                    <button type="button" @click="goToPayment(request.serviceProfessional_id, request.id)" class="btn d-flex align-items-center justify-content-center mb-2 w-100">
                                         <i class="fa-regular fa-credit-card" style="margin-right: 10px;"></i> Pay
                                     </button>
                                     <button type="button" v-if="!request.rating" @click="completedServiceRequestView=request.id" class="btn d-flex align-items-center justify-content-center mb-2 w-100">
@@ -384,6 +388,7 @@ export default ({
         <seperator />
 
         <br>
+        </div>
 
         <customFooter />
     `,
@@ -391,7 +396,8 @@ export default ({
     components: {
         Navbar,
         customFooter,
-        seperator
+        seperator,
+        payments
     },
 
     methods: {
@@ -737,6 +743,20 @@ export default ({
             const completedServiceRequests = await response.json()
             this.completedServiceRequests = completedServiceRequests
         },
+
+        async goToPayment(serviceProfessional_email, service_id) {
+            this.payment.customer = this.customer
+            this.serviceProfessionals.forEach(professionalGroup => {
+                professionalGroup.forEach(professional => {
+                    if (professional.email == serviceProfessional_email) {
+                        this.payment.serviceProfessional = professional
+                    }
+                })
+            })
+            
+            this.payment.serviceRequest = this.completedServiceRequests.find(request => request.id == service_id)
+            this.paymentsView = 1
+        },
         
         async getCustomerRequests() {
             const response = await fetch('/api/customer/service-professionals/requests', {
@@ -785,6 +805,13 @@ export default ({
             searchServiceProfessional_book_date: '',
             searchServiceProfessional_book_service_type: 0,
             searchServiceProfessional_book_service_price: 0,
+
+            paymentsView: 0,
+            payment: {
+                customer: {},
+                serviceProfessional: {},
+                serviceRequest: {}
+            },
 
             services: [],
             reviews: [

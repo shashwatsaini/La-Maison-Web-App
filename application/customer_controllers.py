@@ -145,3 +145,15 @@ def deleteCustomerRequests():
     db.session.commit()
 
     return jsonify('Service request deleted successfully'), 200
+
+# Not exposed in API documentation
+@app.patch('/api/service-professionals/requests/payment')
+@token_required
+def payServiceProfessional():
+    id = request.json['id']
+
+    service_request = ServiceRequests.query.filter_by(id=id).first()
+    service_request.status = 3
+    db.session.commit()
+
+    return jsonify('Payment successful'), 200
