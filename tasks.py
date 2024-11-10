@@ -24,11 +24,10 @@ def sendServiceProfessionalNotifs():
             msg = MIMEMultipart('alternative')
             msg['Subject'] = 'LA MAISON: New Customer Request'
             msg['From'] = app.config['SMTP_SENDER_EMAIL']
-            # msg['To'] = service_professional.email
-            msg['To'] = 'shashwatsaini290@gmail.com'
+            msg['To'] = service_professional.email
 
             text = f"""\
-                Hello NAME,
+                Hello {service_professional.name},
                 You have a new customer request for your services. Please check the app for more details.
 
                 Sincerely,
@@ -36,7 +35,7 @@ def sendServiceProfessionalNotifs():
                 Visit: lamaison.com
             """
 
-            html = """\
+            html = f"""\
                 <!DOCTYPE html>
                 <html>
                 <head></head>
@@ -52,7 +51,7 @@ def sendServiceProfessionalNotifs():
 
                             <!-- Main Content -->
                             <div>
-                                <p style="font-size: 16px; line-height: 1.5; margin: 10px 0;">Hello NAME,</p>
+                                <p style="font-size: 16px; line-height: 1.5; margin: 10px 0;">Hello {service_professional.name},</p>
                                 <p style="font-size: 16px; line-height: 1.5; margin: 10px 0;">You have a new customer request for your services. Please check the app for more details.</p>
                                 <p style="font-size: 16px; line-height: 1.5; margin: 10px 0;">
                                     Sincerely,<br>
@@ -89,8 +88,7 @@ def sendServiceProfessionalNotifs():
                 img.add_header('Content-Disposition', 'inline', filename='logo_text.png')
                 msg.attach(img)
 
-            smtp_server.sendmail(app.config['SMTP_SENDER_EMAIL'], 'shashwatsaini290@gmail.com', msg.as_string())
-            # smtp_server.sendmail(app.config['SMTP_SENDER_EMAIL'], service_professional.email, msg.as_string())
+            smtp_server.sendmail(app.config['SMTP_SENDER_EMAIL'], service_professional.email, msg.as_string())
 
             break
 

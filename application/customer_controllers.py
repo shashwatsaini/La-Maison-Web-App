@@ -39,17 +39,9 @@ def getServiceProfessionals():
         service_professional_json = r.get(key)
         if service_professional_json:
             service_professional_dict = json.loads(service_professional_json)
-            service_professionals.append(service_professional_dict)
+            if service_professional_dict['admin_approved'] == 1:
+                service_professionals.append(service_professional_dict)
     return service_professionals, 200
-
-@app.get('/api/customer/service-professionals/search')
-@token_required
-def searchServiceProfessionals():
-    searchQuery = request.headers['searchQuery']
-    service_professionals = ServiceProfessionals.query.filter(ServiceProfessionals.admin_approved==1, ServiceProfessionals.name.like(f"{searchQuery}%")).all()
-    service_professionals += ServiceProfessionals.query.filter(ServiceProfessionals.admin_approved==1, ServiceProfessionals.email.like(f"{searchQuery}%")).all()
-    service_professionals += ServiceProfessionals.query.filter(ServiceProfessionals.admin_approved==1, ServiceProfessionals.location.like(f"%{searchQuery}%")).all()
-    return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
 
 # Accepted service requests
 @app.get('/api/customer/requests')

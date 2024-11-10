@@ -209,7 +209,7 @@ export default ({
                     <div v-for="serviceProfessional in searchServiceProfessionals" class="col-12 col-md-5 d-flex justify-content-center">
                         <div class="card d-flex flex-row align-items-center p-3" style="width: 90%; margin: 10px;">
                             <div class="d-flex flex-column align-items-center" style="margin-right: 15px;">
-                                <img :src="serviceProfessional.icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 30px; padding: 10px;">
+                                <img :src="serviceProfessional.icon_path" alt="service logo" class="card-img-left" style="width: 80px; height: 80px; margin-bottom: 5px; padding: 10px;">
 
                                 <div class="d-flex flex-column justify-content-center align-items-center w-100" style="flex-grow: 1;">  
                                     <div style="display: flex; gap: 10px; align-items: center;">

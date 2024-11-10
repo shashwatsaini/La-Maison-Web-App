@@ -667,59 +667,67 @@ export default ({
                 headers: {
                     'x-access-token': this.token
                 }
-            });
+            })
         
-            const serviceProfessionals = await response.json();
+            const serviceProfessionals = await response.json()
         
             // Group service professionals by service type
             serviceProfessionals.sort((a, b) => {
                 if (a.service_type < b.service_type) {
-                    return -1;
+                    return -1
                 } else if (a.service_type > b.service_type) {
-                    return 1;
+                    return 1
                 } else {
-                    return 0;
+                    return 0
                 }
-            });
+            })
         
-            const groupedServiceProfessionals = [];
+            const groupedServiceProfessionals = []
         
             serviceProfessionals.forEach(professional => {
-                const { service_type } = professional;
+                const { service_type } = professional
         
                 if (!groupedServiceProfessionals[service_type]) {
-                    groupedServiceProfessionals[service_type] = [];
+                    groupedServiceProfessionals[service_type] = []
                 }
         
-                groupedServiceProfessionals[service_type].push(professional);
+                groupedServiceProfessionals[service_type].push(professional)
             });
 
             // Sort service professionals by rating
             Object.keys(groupedServiceProfessionals).forEach(service_type => {
-                groupedServiceProfessionals[service_type].sort((a, b) => b.rating - a.rating);
-            });
+                groupedServiceProfessionals[service_type].sort((a, b) => b.rating - a.rating)
+            })
         
-            this.serviceProfessionals = groupedServiceProfessionals;
-        },  
+            this.serviceProfessionals = groupedServiceProfessionals
+        }, 
+        
+        async getSearchServiceProfessionalsAll() {
+            const response = await fetch('/api/customer/service-professionals/', {
+                headers: {
+                    'x-access-token': this.token
+                }
+            })
+        
+            const serviceProfessionals = await response.json()
+            this.searchServiceProfessionalsAll = serviceProfessionals
+        },
         
         async processSearchQuery() {
-            if(this.searchQuery != '') {
-                const response = await fetch('/api/customer/service-professionals/search', {
-                    headers: {
-                        'x-access-token': this.token,
-                        'searchQuery': this.searchQuery
-                    }
-                })
-
-                const searchServiceProfessionals = await response.json()
-
-                // Sort service professionals by rating
-                searchServiceProfessionals.sort((a, b) => b.rating - a.rating);
-
-                this.searchServiceProfessionals = searchServiceProfessionals
-            } else {
+            if(this.searchQuery == '') {
                 this.searchServiceProfessionals = []
+                return
             }
+
+            this.searchServiceProfessionals = this.searchServiceProfessionalsAll.filter(professional => {
+                const matchesQuery = professional.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                                     professional.location.toLowerCase().includes(this.searchQuery.toLowerCase())
+                
+                return matchesQuery
+            })
+
+            // Sort service professionals by rating
+            this.searchServiceProfessionals.sort((a, b) => b.rating - a.rating);
         },
         
         async getServiceRequests() {
@@ -800,6 +808,7 @@ export default ({
 
             searchQuery: '',
             searchServiceProfessionals: [],
+            searchServiceProfessionalsAll: [],
             searchServiceProfessional_book: '',
             searchServiceProfessional_book_description: '',
             searchServiceProfessional_book_date: '',
@@ -849,6 +858,7 @@ export default ({
         this.getCompletedServiceRequests()
         this.getCustomerRequests()
         this.getServices()
+        this.getSearchServiceProfessionalsAll()
     },
 
     watch: {

@@ -167,7 +167,7 @@ def deleteServiceProfessional():
 # Redis cached
 @app.post('/api/admin/service-professionals/search')
 @token_required
-def searchServiceProfessionalsForAdmin():
+def getServiceProfessionalsForAdmin():
     r = createClient()
     serviceProfessional_keys = r.keys('service_professional:*')
     service_professionals = []
@@ -216,9 +216,10 @@ def deleteBlockedServiceProfessional():
     return jsonify('Service professional deleted successfully'), 200
     """
 
+# Redis cached
 @app.post('/api/admin/customers/search')
 @token_required
-def searchCustomersForAdmin():
+def getCustomersForAdmin():
     r = createClient()
     customer_keys = r.keys('customer:*')
     customers = []
