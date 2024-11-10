@@ -22,6 +22,16 @@ export default ({
             </div>
         </div>
 
+        <div class="row justify-content-center mt-3">
+            <div class="col-12 col-md-9 d-flex align-items-center">
+                <div class="d-flex justify-content-between w-100">
+                    <button type="button" class="btn-adminControlsWide" disabled>Service <span class="logo-font">PROFESSIONNELS</span> Notifications: ON</button>
+                    <button type="button" class="btn-adminControlsWide" disabled>Service <span class="logo-font">PROFESSIONNELS</span> Monthly Reports: ON</button>
+                    <button type="button" class="btn-adminControlsWide" disabled><span class="logo-font">PATRONS</span> Monthly Reports: ON</button>
+                </div>
+            </div>
+        </div>
+
         <seperator />
 
         <!-- Create a service -->
@@ -219,6 +229,10 @@ export default ({
                                     <button v-if="serviceProfessional.admin_approved == 2" type="button" @click="handleDeleteServiceProfessional(serviceProfessional.email)" class="btn bg-danger d-flex align-items-center justify-content-center mb-2">
                                         <i class="fa fa-ban"></i>
                                     </button>
+
+                                    <button type="button" class="btn d-flex align-items-center justify-content-center mb-2">
+                                        Export <i class="fa fa-table" style="margin-left: 10px;"></i>
+                                    </button>
                                 </div>
                             </div>
 
@@ -414,94 +428,7 @@ export default ({
                 alert('Error:', error)
             }
         },
-
-        async handleBlockServiceProfessional(email) {
-            try {
-                const response = await fetch('/api/admin/service-professionals/block', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-access-token': this.token
-                    },
-                    body: JSON.stringify({
-                        email: email
-                    })
-                })
-
-                if (response.ok) {
-                    alert('Service professional blocked successfully.')
-                    this.processSearchServiceProfessionalQuery()
-                } else {
-                    var data = await response.json()
-                    if (data['message']) {
-                        alert(data['message'])
-                    } else {
-                        alert('Invalid credentials. Please try again.')
-                    }
-                }
-            } catch (error) {
-                alert('Error:', error)
-            }
-        },
-
-        async handleUnblockServiceProfessional(email) {
-            try {
-                const response = await fetch('/api/admin/service-professionals/unblock', {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-access-token': this.token
-                    },
-                    body: JSON.stringify({
-                        email: email
-                    })
-                })
-
-                if (response.ok) {
-                    alert('Service professional unblocked successfully.')
-                    this.processSearchServiceProfessionalQuery()
-                } else {
-                    var data = await response.json()
-                    if (data['message']) {
-                        alert(data['message'])
-                    } else {
-                        alert('Invalid credentials. Please try again.')
-                    }
-                }
-            } catch (error) {
-                alert('Error:', error)
-            }
-        },
-
-        async handleDeleteServiceProfessional(email) {
-            try {
-                const response = await fetch('/api/admin/service-professionals/block', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-access-token': this.token
-                    },
-                    body: JSON.stringify({
-                        email: email
-                    })
-                })
-
-                if (response.ok) {
-                    alert('Service professional deleted successfully.')
-                    this.processSearchServiceProfessionalQuery()
-                } else {
-                    var data = await response.json()
-                    if (data['message']) {
-                        alert(data['message'])
-                    } else {
-                        alert('Invalid credentials. Please try again.')
-                    }
-                }
-            } catch (error) {
-                alert('Error:', error)
-            }
-        },
-
+        
         async handleFormDeleteServiceSubmit() {
             try {
                 const response = await fetch('/api/admin/service', {
@@ -533,27 +460,129 @@ export default ({
             window.location.href = '/adminDash'
         },
 
-        async processSearchServiceProfessionalQuery() {
-            const response = await fetch('/api/admin/service-professionals/search', {
-                method: 'POST',
-                headers: {
-                    'x-access-token': this.token,
-                    'Content-Type': 'application/json'
-                },
+        async handleBlockServiceProfessional(email) {
+            try {
+                const response = await fetch('/api/admin/service-professionals/block', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
 
-                body: JSON.stringify({query: this.searchServiceProfessionalQuery})
-            })
+                if (response.ok) {
+                    alert('Service professional blocked successfully.')
+                    let change = 1
+                    this.processSearchServiceProfessionalQuery(change)
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
 
-            let searchServiceProfessionals = await response.json()
+        async handleUnblockServiceProfessional(email) {
+            try {
+                const response = await fetch('/api/admin/service-professionals/unblock', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Service professional unblocked successfully.')
+                    let change = 1
+                    this.processSearchServiceProfessionalQuery(change)
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
+        async handleDeleteServiceProfessional(email) {
+            try {
+                const response = await fetch('/api/admin/service-professionals/block', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        email: email
+                    })
+                })
+
+                if (response.ok) {
+                    alert('Service professional deleted successfully.')
+                    let change = 1
+                    this.processSearchServiceProfessionalQuery(change)
+                } else {
+                    var data = await response.json()
+                    if (data['message']) {
+                        alert(data['message'])
+                    } else {
+                        alert('Invalid credentials. Please try again.')
+                    }
+                }
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },        
+
+        async processSearchServiceProfessionalQuery(change) {
+            // Get all professionals once
+            if (this.serviceProfessionalsAll.length == 0 || !this.serviceProfessionalsAll || change) {
+                const response = await fetch('/api/admin/service-professionals/search', {
+                    method: 'POST',
+                    headers: {
+                        'x-access-token': this.token,
+                        'Content-Type': 'application/json'
+                    },
+
+                    body: JSON.stringify({query: this.searchServiceProfessionalQuery})
+                })
+
+                let serviceProfessionalsAll = await response.json()
+                this.serviceProfessionalsAll = serviceProfessionalsAll
+            }
 
             // Sort service professionals by rating
-            searchServiceProfessionals.sort((a, b) => -(b.rating - a.rating));
+            this.serviceProfessionalsAll.sort((a, b) => -(b.rating - a.rating))
+            
+            this.searchServiceProfessionals = this.serviceProfessionalsAll.filter(professional => {
+                const matchesQuery = professional.name.toLowerCase().includes(this.searchServiceProfessionalQuery.toLowerCase()) ||
+                                     professional.email.toLowerCase().includes(this.searchServiceProfessionalQuery.toLowerCase()) ||
+                                     professional.location.toLowerCase().includes(this.searchServiceProfessionalQuery.toLowerCase())
+                const validAdminApproved = professional.admin_approved !== 0 && professional.admin_approved !== 3
+                return matchesQuery && validAdminApproved
+            })
 
             // Get blocked professionals first
             const adminId2Professionals = []
             const otherProfessionals = []
 
-            searchServiceProfessionals.forEach(professional => {
+            this.searchServiceProfessionals.forEach(professional => {
                 if (professional.admin_approved === 2) {
                     adminId2Professionals.push(professional)
                 } else {
@@ -561,7 +590,7 @@ export default ({
                 }
             });
 
-            searchServiceProfessionals = [...adminId2Professionals, ...otherProfessionals]
+            var searchServiceProfessionals = [...adminId2Professionals, ...otherProfessionals]
 
             this.searchServiceProfessionals = searchServiceProfessionals
         },
@@ -581,7 +610,8 @@ export default ({
 
                 if (response.ok) {
                     alert('Customer blocked successfully.')
-                    this.processSearchCustomerQuery()
+                    let change = 1
+                    this.processSearchCustomerQuery(change)
                 } else {
                     var data = await response.json()
                     if (data['message']) {
@@ -610,7 +640,8 @@ export default ({
 
                 if (response.ok) {
                     alert('Customer unblocked successfully.')
-                    this.processSearchCustomerQuery()
+                    let change = 1
+                    this.processSearchCustomerQuery(change)
                 } else {
                     var data = await response.json()
                     if (data['message']) {
@@ -639,7 +670,8 @@ export default ({
 
                 if (response.ok) {
                     alert('Customer deleted successfully.')
-                    this.processSearchCustomerQuery()
+                    let change = 1
+                    this.processSearchCustomerQuery(change)
                 } else {
                     var data = await response.json()
                     if (data['message']) {
@@ -653,24 +685,34 @@ export default ({
             }
         },
 
-        async processSearchCustomerQuery() {
-            const response = await fetch('/api/admin/customers/search', {
-                method: 'POST',
-                headers: {
-                    'x-access-token': this.token,
-                    'Content-Type': 'application/json'
-                },
+        async processSearchCustomerQuery(change) {
+            // Get all customers once
+            if (this.customersAll.length == 0 || !this.customersAll || change) {
+                const response = await fetch('/api/admin/customers/search', {
+                    method: 'POST',
+                    headers: {
+                        'x-access-token': this.token,
+                        'Content-Type': 'application/json'
+                    },
+                })
 
-                body: JSON.stringify({query: this.searchCustomerQuery})
+                let customersAll = await response.json()
+                this.customersAll = customersAll
+            }
+
+            this.searchCustomers = this.customersAll.filter(customer => {
+                const matchesQuery = customer.name.toLowerCase().includes(this.searchCustomerQuery.toLowerCase()) ||
+                                     customer.email.toLowerCase().includes(this.searchCustomerQuery.toLowerCase()) ||
+                                     customer.address.toLowerCase().includes(this.searchCustomerQuery.toLowerCase())
+                const validAdminAction = customer.admin_action !== 2
+                return matchesQuery && validAdminAction
             })
-
-            let searchCustomers = await response.json()
 
             // Get blocked customers first
             const adminAction1Customers = []
             const otherCustomers = []
 
-            searchCustomers.forEach(customer => {
+            this.searchCustomers.forEach(customer => {
                 if (customer.admin_action === 1) {
                     adminAction1Customers.push(customer)
                 } else {
@@ -678,9 +720,7 @@ export default ({
                 }
             });
 
-            searchCustomers = [...adminAction1Customers, ...otherCustomers]
-
-            this.searchCustomers = searchCustomers
+            this.searchCustomers = [...adminAction1Customers, ...otherCustomers]
         }, 
 
         async getServices() {
@@ -815,9 +855,11 @@ export default ({
 
             searchServiceProfessionalQuery: '',
             searchServiceProfessionals: [],
+            serviceProfessionalsAll: [],
 
             searchCustomerQuery: '',
-            searchCustomers: []
+            searchCustomers: [],
+            customersAll: []
         }
     },
 
@@ -844,11 +886,14 @@ export default ({
         },
 
         searchServiceProfessionalQuery: function() {
-            this.processSearchServiceProfessionalQuery()
+            // Updates cache after block or unblock operations
+            let change = 0
+            this.processSearchServiceProfessionalQuery(change)
         },
 
         searchCustomerQuery: function() {
-            this.processSearchCustomerQuery()
+            let change = 0
+            this.processSearchCustomerQuery(change)
         }
     }
 })

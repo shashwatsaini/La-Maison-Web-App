@@ -1,10 +1,14 @@
 import os
+from celery_app_conf import create_celery_app
 from flask import current_app as app
-from flask import jsonify, request, render_template
-from sqlalchemy import event
+from flask import jsonify, request
+from celery.result import AsyncResult
+from tasks import sendServiceProfessionalNotifs
+from sqlalchemy import event, and_
 from application.models import db, Admins, Services, ServiceRequests, ServiceProfessionals, Customers, CustomerRequests
-from application.security import generate_token, token_required
-from application.redis_controllers import updateServicesCache, updateServiceProfessionalsCache
+from application.security import token_required
+from application.redis_controllers import createClient, updateServicesCache, updateServiceProfessionalsCache, updateCustomersCache
+import json
 
 # Event listeners to update Redis cache
 
@@ -20,6 +24,12 @@ def update_services_cache(mapper, connection, target):
 def update_services_cache(mapper, connection, target):
     updateServiceProfessionalsCache()
 
+@event.listens_for(Customers, 'after_insert')
+@event.listens_for(Customers, 'after_update')
+@event.listens_for(Customers, 'after_delete')
+def update_services_cache(mapper, connection, target):
+    updateCustomersCache()
+
 ServiceProfessional_admin_approved = {
     0: 'Pending',
     1: 'Approved',
@@ -32,6 +42,21 @@ Customers_admin_action = {
     1: 'Blocked',
     2: 'Deleted'
 }
+
+# Celery tasks
+celery_app = create_celery_app(app)
+
+@app.post('/api/admin/tasks/send-service-professional-notifs')
+@token_required
+def startSendServiceProfessionalNotifs():
+    task = sendServiceProfessionalNotifs.delay()
+    return jsonify({'task_id': task.id}), 200
+
+@app.get('/api/admin/tasks/send-service-professional-notifs/<task_id>')
+@token_required 
+def getSendServiceProfessionalNotifs(task_id):
+    task = celery_app.AsyncResult(task_id)
+    return jsonify({'status': task.status, 'result': task.result}), 200
 
 @app.post('/api/admin/service')
 @token_required
@@ -139,15 +164,19 @@ def deleteServiceProfessional():
     db.session.commit()
     return jsonify('Service professional deleted successfully'), 200
 
+# Redis cached
 @app.post('/api/admin/service-professionals/search')
 @token_required
 def searchServiceProfessionalsForAdmin():
-    query = request.json['query']
-    if query == '':
-        service_professionals = ServiceProfessionals.query.filter((ServiceProfessionals.admin_approved != 0) & (ServiceProfessionals.admin_approved != 3)).all()
-    else:
-        service_professionals = ServiceProfessionals.query.filter(ServiceProfessionals.name.contains(query) | ServiceProfessionals.email.contains(query) | ServiceProfessionals.location.contains(query), ServiceProfessionals.admin_approved != 0 & ServiceProfessionals.admin_approved != 3).all()
-    return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
+    r = createClient()
+    serviceProfessional_keys = r.keys('service_professional:*')
+    service_professionals = []
+    for key in serviceProfessional_keys:
+        service_professional_json = r.get(key)
+        if service_professional_json:
+            service_professional_dict = json.loads(service_professional_json)
+            service_professionals.append(service_professional_dict)
+    return jsonify(service_professionals), 200
 
 @app.patch('/api/admin/service-professionals/block')
 @token_required
@@ -174,6 +203,7 @@ def deleteBlockedServiceProfessional():
     service_professional = ServiceProfessionals.query.filter_by(email=email).first()
     service_professional.admin_approved = 3
 
+    """
     service_requests = ServiceRequests.query.filter_by(serviceProfessional_id=email).all()
     for service_request in service_requests:
         db.session.remove(service_request)
@@ -184,16 +214,20 @@ def deleteBlockedServiceProfessional():
         
     db.session.commit()
     return jsonify('Service professional deleted successfully'), 200
+    """
 
 @app.post('/api/admin/customers/search')
 @token_required
 def searchCustomersForAdmin():
-    query = request.json['query']
-    if query == '':
-        customers = Customers.query.filter(Customers.admin_action != 2).all()
-    else:
-        customers = Customers.query.filter(Customers.name.contains(query) | Customers.email.contains(query) | Customers.address.contains(query)).all()
-    return jsonify([customer.serialize() for customer in customers]), 200
+    r = createClient()
+    customer_keys = r.keys('customer:*')
+    customers = []
+    for key in customer_keys:
+        customer_json = r.get(key)
+        if customer_json:
+            customer_dict = json.loads(customer_json)
+            customers.append(customer_dict)
+    return jsonify(customers), 200
 
 @app.patch('/api/admin/customers/block')
 @token_required

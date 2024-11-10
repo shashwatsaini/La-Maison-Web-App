@@ -48,3 +48,18 @@
     background-color: rgb(108, 0, 0);
     color: #fff;
 }
+
+.btn-adminControlsWide {
+    flex: 1;
+    margin: 5px;
+    background-color: #001;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.btn-adminControlsWide:hover {
+    background-color: #001;
+    color: #fff;
+}
