@@ -25,6 +25,11 @@ def create_celery_app(app):
             'task': 'tasks.sendServiceProfessionalNotifs',
             'schedule': crontab(hour=8, minute=0),
         },
+
+        'send-service-professional-reports-every-month': {
+            'task': 'tasks.sendServiceProfessionalReports',
+            'schedule': crontab(day_of_month=1, hour=8, minute=0),
+        }
     }
 
     celery.conf.timezone = 'Asia/Kolkata'

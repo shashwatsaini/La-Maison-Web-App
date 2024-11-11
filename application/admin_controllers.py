@@ -3,7 +3,7 @@ from celery_app_conf import create_celery_app
 from flask import current_app as app
 from flask import jsonify, request
 from celery.result import AsyncResult
-from tasks import sendServiceProfessionalNotifs
+from tasks import sendServiceProfessionalNotifs, sendServiceProfessionalReports
 from sqlalchemy import event, and_
 from application.models import db, Admins, Services, ServiceRequests, ServiceProfessionals, Customers, CustomerRequests
 from application.security import token_required
@@ -55,6 +55,18 @@ def startSendServiceProfessionalNotifs():
 @app.get('/api/admin/tasks/send-service-professional-notifs/<task_id>')
 @token_required 
 def getSendServiceProfessionalNotifs(task_id):
+    task = celery_app.AsyncResult(task_id)
+    return jsonify({'status': task.status, 'result': task.result}), 200
+
+@app.post('/api/admin/tasks/send-service-professional-reports')
+@token_required
+def startSendServiceProfessionalReports():
+    task = sendServiceProfessionalReports.delay()
+    return jsonify({'task_id': task.id}), 200
+
+@app.get('/api/admin/tasks/send-service-professional-reports/<task_id>')
+@token_required 
+def getSendServiceProfessionalReports(task_id):
     task = celery_app.AsyncResult(task_id)
     return jsonify({'status': task.status, 'result': task.result}), 200
 
