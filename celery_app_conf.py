@@ -28,7 +28,12 @@ def create_celery_app(app):
 
         'send-service-professional-reports-every-month': {
             'task': 'tasks.sendServiceProfessionalReports',
-            'schedule': crontab(day_of_month=1, hour=8, minute=0),
+            'schedule': crontab(day_of_month=31, hour=8, minute=0),
+        },
+
+        'send-customer-reports-every-month': {
+            'task': 'tasks.sendCustomerReports',
+            'schedule': crontab(day_of_month=31, hour=8, minute=0),
         }
     }
 
