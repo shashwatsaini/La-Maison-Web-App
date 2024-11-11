@@ -32,3 +32,5 @@ class DevelopmentConfig(Config):
     SMTP_SERVER = keys['SMTP_SERVER']
 
     SERVICE_ICONS_UPLOAD_FOLDER = os.path.join('static', 'uploads', 'services')
+
+    TASKS_DUMP_FOLDER = os.path.join('tasks_dump')

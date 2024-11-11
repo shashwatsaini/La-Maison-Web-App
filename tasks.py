@@ -1,3 +1,4 @@
+import os
 import smtplib
 from datetime import datetime
 from app import logger
@@ -500,3 +501,17 @@ def sendCustomerReports():
             smtp_server.sendmail(app.config['SMTP_SENDER_EMAIL'], customer.email, msg.as_string())
 
     return {'message': 'Reports sent successfully', 'count': len(customers)}
+
+@celery_app.task
+def exportServiceProfessionalAsCSV(id):
+    logger.info('----------------- Exporting Service Professional as CSV -----------------')
+
+    service_requests = ServiceRequests.query.filter(ServiceRequests.serviceProfessional_id == id, ServiceRequests.status >= 2).all()  
+
+    file_path = os.path.join(app.config['TASKS_DUMP_FOLDER'], f'{id}_service_requests.csv')
+    with open(file_path, 'w') as f:
+        f.write('customer_id,serviceProfessional_id,price,for_date,description,status\n')
+        for service_request in service_requests:
+            f.write(f'{service_request.customer_id},{service_request.serviceProfessional_id},{service_request.price},{service_request.for_date},{service_request.description},{service_request.status}\n')
+
+    return {'message': 'CSV exported successfully', 'file_path': file_path}

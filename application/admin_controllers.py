@@ -1,9 +1,9 @@
 import os
 from celery_app_conf import create_celery_app
 from flask import current_app as app
-from flask import jsonify, request
+from flask import jsonify, request, send_file
 from celery.result import AsyncResult
-from tasks import sendServiceProfessionalNotifs, sendServiceProfessionalReports, sendCustomerReports
+from tasks import sendServiceProfessionalNotifs, sendServiceProfessionalReports, sendCustomerReports, exportServiceProfessionalAsCSV
 from sqlalchemy import event, and_
 from application.models import db, Admins, Services, ServiceRequests, ServiceProfessionals, Customers, CustomerRequests
 from application.security import token_required
@@ -81,6 +81,33 @@ def startSendCustomerReports():
 def getSendCustomerReports(task_id):
     task = celery_app.AsyncResult(task_id)
     return jsonify({'status': task.status, 'result': task.result}), 200
+
+@app.post('/api/admin/tasks/export-service-professional-as-csv')
+@token_required
+def startExportServiceProfessionalAsCSV():
+    id = request.json['id']
+    task = exportServiceProfessionalAsCSV.delay(id)
+    return jsonify({'task_id': task.id}), 200
+
+@app.get('/api/admin/tasks/export-service-professional-as-csv/<task_id>')
+@token_required
+def getExportServiceProfessionalAsCSV(task_id):
+    task = celery_app.AsyncResult(task_id)
+    print(task.state)
+    if task.state == 'SUCCESS':
+        return jsonify({'status': task.status, 'result': task.result}), 200
+    else:
+        return jsonify({'status': task.status}), 202
+
+@app.get('/api/admin/tasks/export-service-professional-as-csv/download/<task_id>')
+@token_required
+def downloadExportServiceProfessionalAsCSV(task_id):
+    task = celery_app.AsyncResult(task_id)
+    if task.state == 'SUCCESS':
+        file_path = task.result.get('file_path')
+        if file_path and os.path.exists(file_path):
+            return send_file(file_path, as_attachment=True)
+    return jsonify({'error': 'File not found or task not completed'}), 404
 
 @app.post('/api/admin/service')
 @token_required

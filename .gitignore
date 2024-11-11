@@ -173,3 +173,6 @@ start.txt
 
 # Test files
 test*
+
+# Tasks dump
+tasks_dump/*

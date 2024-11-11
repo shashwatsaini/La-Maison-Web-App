@@ -22,12 +22,34 @@ export default ({
             </div>
         </div>
 
+        <br>
+
         <div class="row justify-content-center mt-3">
             <div class="col-12 col-md-9 d-flex align-items-center">
                 <div class="d-flex justify-content-between w-100">
-                    <button type="button" class="btn-adminControlsWide" disabled>Service <span class="logo-font">PROFESSIONNELS</span> Notifications: ON</button>
-                    <button type="button" class="btn-adminControlsWide" disabled>Service <span class="logo-font">PROFESSIONNELS</span> Monthly Reports: ON</button>
-                    <button type="button" class="btn-adminControlsWide" disabled><span class="logo-font">PATRONS</span> Monthly Reports: ON</button>
+                    <div class="slide-button">
+                        <span style="margin-right: 10px;">Service <span class="logo-font">PROFESSIONNELS</span> Notifications</span>
+                        <label class="switch">
+                            <input type="checkbox" checked disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="slide-button">
+                        <span style="margin-right: 10px;">Service <span class="logo-font">PROFESSIONNELS</span> Monthly Reports</span>
+                        <label class="switch">
+                            <input type="checkbox" checked disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="slide-button">
+                        <span style="margin-right: 10px;">Service <span class="logo-font">PROFESSIONNELS</span> Monthly Reports</span>
+                        <label class="switch">
+                            <input type="checkbox" checked disabled>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
@@ -230,7 +252,7 @@ export default ({
                                         <i class="fa fa-ban"></i>
                                     </button>
 
-                                    <button type="button" class="btn d-flex align-items-center justify-content-center mb-2">
+                                    <button type="button" @click="exportServiceProfessionalAsCSV(serviceProfessional.email)" class="btn d-flex align-items-center justify-content-center mb-2">
                                         Export <i class="fa fa-table" style="margin-left: 10px;"></i>
                                     </button>
                                 </div>
@@ -363,11 +385,11 @@ export default ({
 
         async handleFormServiceSubmit() {
             const formData = new FormData()
-            formData.append('name', this.name);
-            formData.append('description', this.description);
-            formData.append('price', this.price);
-            formData.append('timeRequired', this.timeRequired);
-            formData.append('icon', this.icon);
+            formData.append('name', this.name)
+            formData.append('description', this.description)
+            formData.append('price', this.price)
+            formData.append('timeRequired', this.timeRequired)
+            formData.append('icon', this.icon)
 
             try {
                 const response = await fetch('/api/admin/service', {
@@ -396,13 +418,13 @@ export default ({
 
         async handleFormModifyServiceSubmit() {
             const formData = new FormData()
-            formData.append('id', this.modifyService);
-            formData.append('name', this.modifyName);
-            formData.append('description', this.modifyDescription);
-            formData.append('price', this.modifyPrice);
-            formData.append('timeRequired', this.modifyTimeRequired);
+            formData.append('id', this.modifyService)
+            formData.append('name', this.modifyName)
+            formData.append('description', this.modifyDescription)
+            formData.append('price', this.modifyPrice)
+            formData.append('timeRequired', this.modifyTimeRequired)
             if (this.modifyIcon)
-                formData.append('icon', this.modifyIcon);
+                formData.append('icon', this.modifyIcon)
 
             try {
                 const response = await fetch('/api/admin/service', {
@@ -588,7 +610,7 @@ export default ({
                 } else {
                     otherProfessionals.push(professional)
                 }
-            });
+            })
 
             var searchServiceProfessionals = [...adminId2Professionals, ...otherProfessionals]
 
@@ -685,6 +707,57 @@ export default ({
             }
         },
 
+        async exportServiceProfessionalAsCSV(email) {
+            try {
+                const response = await fetch('/api/admin/tasks/export-service-professional-as-csv', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-access-token': this.token
+                    },
+                    body: JSON.stringify({
+                        id: email
+                    })
+                })
+
+                const responseJson = await response.json()
+                const task_id = responseJson.task_id
+                console.log(task_id)
+
+                const pollTaskStatus = async () => {
+                    const response2 = await fetch(`/api/admin/tasks/export-service-professional-as-csv/${task_id}`, {
+                        method: 'GET',
+                        headers: {
+                            'x-access-token': this.token
+                        }
+                    })
+                
+                    if (response2.status === 200) {
+                        clearInterval(pollingInterval) // Stop polling when task is complete
+                
+                        const response3 = await fetch(`/api/admin/tasks/export-service-professional-as-csv/download/${task_id}`, {
+                            method: 'GET',
+                            headers: {
+                                'x-access-token': this.token
+                            }
+                        })
+                
+                        const blob = await response3.blob()
+                        const url = window.URL.createObjectURL(blob)
+                        const a = document.createElement('a')
+                        a.href = url
+                        a.download = 'service-professional.csv'
+                        a.click()
+                    }
+                }
+                
+                const pollingInterval = setInterval(pollTaskStatus, 5000)
+
+            } catch (error) {
+                alert('Error:', error)
+            }
+        },
+
         async processSearchCustomerQuery(change) {
             // Get all customers once
             if (this.customersAll.length == 0 || !this.customersAll || change) {
@@ -718,7 +791,7 @@ export default ({
                 } else {
                     otherCustomers.push(customer)
                 }
-            });
+            })
 
             this.searchCustomers = [...adminAction1Customers, ...otherCustomers]
         }, 
