@@ -1,8 +1,9 @@
+import jwt
+import time
 from functools import wraps
 from flask import current_app as app
 from flask import jsonify, request
-from application.models import db, Admins, ServiceProfessionals, Customers
-import jwt
+from application.models import db, Admins, ServiceProfessionals, Customers, API_Log
 from datetime import datetime
 
 # Generate a token for the user
@@ -53,3 +54,53 @@ def token_required(f):
 def get_email_from_token(token):
     data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
     return data['email']
+
+# Decorator to log API requests
+def log_api_call(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        start_time = time.time()
+
+        log = API_Log(
+                date=datetime.now(),
+                method=request.method,
+                size=len(request.data),
+                path=request.path,
+                user_agent=request.user_agent.string,
+                remote_address=request.remote_addr,
+                referrer=request.referrer,
+                browser=request.user_agent.browser,
+                platform=request.user_agent.platform,
+                mimetype=request.mimetype
+            )
+        
+        # Written due to errors during API testing with postman
+        if request.referrer is None:
+            log.referrer = 'Unknown'
+        if request.user_agent.browser is None:
+            log.browser = 'Unknown'
+        if request.user_agent.platform is None:
+            log.platform = 'Unknown'
+        
+        response = f(*args, **kwargs)
+
+        end_time = time.time()
+        log.response_time = end_time - start_time
+
+        # Logging user type
+        splits = request.path.split('/')
+        if splits[2] == 'admin':
+            log.user_type = 'ADMIN'
+        elif splits[2] == 'customer':
+            log.user_type = 'CUSTOMER'
+        elif splits[2] == 'service-professionals':
+            log.user_type = 'SERVICE PROFESSIONAL'
+        else:
+            log.user_type = 'USER'
+
+        db.session.add(log)
+        db.session.commit()
+
+        return f(*args, **kwargs)
+
+    return decorated_function

@@ -2,11 +2,13 @@ from flask import current_app as app
 from flask import jsonify, request, render_template
 from application.models import db, Admins, Services, ServiceProfessionals, Customers
 from application.redis_controllers import createClient
+from application.security import log_api_call
 import json
 
 # Gets all services
 # Redis cached
 @app.get('/api/services')
+@log_api_call
 def services():
     r = createClient()
     service_keys = r.keys('service:*')

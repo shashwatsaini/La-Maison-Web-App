@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import current_app as app
 from flask import jsonify, request, render_template
 from application.models import db, Admins, Services, ServiceProfessionals, Customers,ServiceRequests, CustomerRequests
-from application.security import generate_token, token_required, get_email_from_token
+from application.security import token_required, get_email_from_token, log_api_call
 from application.redis_controllers import createClient
 
 CustomerRequests_status = {
@@ -22,6 +22,7 @@ ServiceRequests_status = {
 
 @app.get('/api/customer/')
 @token_required
+@log_api_call
 def getCustomer():
     token = request.headers['x-access-token']
     email = get_email_from_token(token)
@@ -31,6 +32,7 @@ def getCustomer():
 # Redis cached
 @app.get('/api/customer/service-professionals/')
 @token_required
+@log_api_call
 def getServiceProfessionals():
     r = createClient()
     service_professional_keys = r.keys('service_professional:*')
@@ -46,6 +48,7 @@ def getServiceProfessionals():
 # Accepted service requests
 @app.get('/api/customer/requests')
 @token_required
+@log_api_call
 def getCustomerServiceRequests():
     token = request.headers['x-access-token']
     customer_id = get_email_from_token(token)
@@ -54,6 +57,7 @@ def getCustomerServiceRequests():
 
 @app.delete('/api/customer/requests')
 @token_required
+@log_api_call
 def deleteCustomerServiceRequests():
     id = request.json['id']
 
@@ -66,6 +70,7 @@ def deleteCustomerServiceRequests():
 # Completed service requests
 @app.get('/api/customer/requests/completed')
 @token_required
+@log_api_call
 def getCustomerCompletedServiceRequests():
     token = request.headers['x-access-token']
     customer_id = get_email_from_token(token)
@@ -74,6 +79,7 @@ def getCustomerCompletedServiceRequests():
 
 @app.patch('/api/customer/requests/completed')
 @token_required
+@log_api_call
 def rateServiceProfessional():
     id = request.json['id']
     remark = request.json['remark']
@@ -96,6 +102,7 @@ def rateServiceProfessional():
 # Pending service requests
 @app.get('/api/customer/service-professionals/requests')
 @token_required
+@log_api_call
 def getCustomerRequests():
     token = request.headers['x-access-token']
     customer_id = get_email_from_token(token)
@@ -104,6 +111,7 @@ def getCustomerRequests():
 
 @app.post('/api/customer/service-professionals/requests')
 @token_required
+@log_api_call
 def requestServiceProfessional():
     token = request.headers['x-access-token']
     customer_id = get_email_from_token(token)
@@ -122,6 +130,7 @@ def requestServiceProfessional():
 
 @app.patch('/api/customer/service-professionals/requests')
 @token_required
+@log_api_call
 def updateCustomerRequests():
     id = request.json['id']
     description = request.json['description']
@@ -137,6 +146,7 @@ def updateCustomerRequests():
 
 @app.delete('/api/customer/service-professionals/requests')
 @token_required
+@log_api_call
 def deleteCustomerRequests():
     token = request.headers['x-access-token']
     customer_id = get_email_from_token(token)
@@ -151,6 +161,7 @@ def deleteCustomerRequests():
 # Not exposed in API documentation
 @app.patch('/api/service-professionals/requests/payment')
 @token_required
+@log_api_call
 def payServiceProfessional():
     id = request.json['id']
 

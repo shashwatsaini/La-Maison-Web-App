@@ -4,7 +4,7 @@ from flask import current_app as app
 from flask import jsonify, request, render_template
 from sqlalchemy import or_
 from application.models import db, Admins, Services, ServiceProfessionals, Customers, ServiceRequests, CustomerRequests
-from application.security import generate_token, token_required, get_email_from_token
+from application.security import token_required, get_email_from_token, log_api_call
 
 CustomerRequests_status = {
     0: 'Pending',
@@ -28,6 +28,7 @@ ServiceProfessional_admin_approved = {
 
 @app.get('/api/service-professional')
 @token_required
+@log_api_call
 def getServiceProfessional():
     token = request.headers['x-access-token']
     email = get_email_from_token(token)
@@ -36,6 +37,7 @@ def getServiceProfessional():
 
 @app.get('/api/service-professionals/requests')
 @token_required
+@log_api_call
 def getServiceProfessionalRequests():
     token = request.headers['x-access-token']
     serviceProfessional_id = get_email_from_token(token)
@@ -44,6 +46,7 @@ def getServiceProfessionalRequests():
 
 @app.patch('/api/service-professionals/requests')
 @token_required
+@log_api_call
 def completeServiceRequest():
     id = request.json['id']
     service_request = ServiceRequests.query.filter_by(id=id).first()
@@ -56,6 +59,7 @@ def completeServiceRequest():
 
 @app.get('/api/service-professionals/requests/completed')
 @token_required
+@log_api_call
 def getCompletedServiceProfessionalRequests():
     token = request.headers['x-access-token']
     serviceProfessional_id = get_email_from_token(token)
@@ -64,6 +68,7 @@ def getCompletedServiceProfessionalRequests():
 
 @app.get('/api/service-professionals/customer/requests')
 @token_required
+@log_api_call
 def getCustomerRequestsForServiceProfessional():
     token = request.headers['x-access-token']
     serviceProfessional_id = get_email_from_token(token)
@@ -72,6 +77,7 @@ def getCustomerRequestsForServiceProfessional():
 
 @app.post('/api/service-professionals/customer/requests/accept')
 @token_required
+@log_api_call
 def acceptCustomerRequest():
     token = request.headers['x-access-token']
     serviceProfessional_id = get_email_from_token(token)
@@ -88,6 +94,7 @@ def acceptCustomerRequest():
 
 @app.patch('/api/service-professionals/customer/requests/reject')
 @token_required
+@log_api_call
 def rejectCustomerRequest():
     token = request.headers['x-access-token']
     serviceProfessional_id = get_email_from_token(token)

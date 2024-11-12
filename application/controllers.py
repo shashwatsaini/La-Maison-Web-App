@@ -1,7 +1,7 @@
 from flask import current_app as app
 from flask import jsonify, request, render_template
 from application.models import db, Admins, Services, ServiceProfessionals, Customers
-from application.security import generate_token, token_required
+from application.security import generate_token, log_api_call
 
 # Catch all routes and render the index.html file
 @app.route('/', defaults={'path': ''})
@@ -10,6 +10,7 @@ def catch_all(path):
     return render_template('index.html')
 
 @app.post('/api/admin/login')
+@log_api_call
 def adminLogin():
     data = request.json
     email = data['email']
@@ -22,6 +23,7 @@ def adminLogin():
         return jsonify('User not found.'), 404
 
 @app.post('/api/login')
+@log_api_call
 def login():
     data = request.json
     email = data['email']
@@ -50,6 +52,7 @@ def login():
 
 # Registers a new user
 @app.post('/api/register')
+@log_api_call
 def register():
     data = request.json
     

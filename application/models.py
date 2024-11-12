@@ -1,5 +1,7 @@
 from datetime import datetime
 from application.database import db
+from flask import current_app as app
+from flask_sqlalchemy import SQLAlchemy
 
 class Services(db.Model):
     __tablename__ = 'Services'
@@ -158,4 +160,38 @@ class CustomerRequests(db.Model):
             'for_day': self.for_date.strftime('%A'),
             'description': self.description,
             'status': self.status
+        }
+
+class API_Log(db.Model):
+    __tablename__ = 'api_log'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    date = db.Column(db.DateTime)
+    method = db.Column(db.String)
+    size = db.Column(db.Integer)
+    path = db.Column(db.String)
+    user_agent = db.Column(db.String)
+    remote_address = db.Column(db.String)
+    referrer = db.Column(db.String)
+    browser = db.Column(db.String)
+    platform = db.Column(db.String)
+    mimetype = db.Column(db.String)
+    response_time = db.Column(db.Float)
+    user_type = db.Column(db.String, default='USER')
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'date': self.date,
+            'method': self.method,
+            'size': self.size,
+            'path': self.path,
+            'user_agent': self.user_agent,
+            'remote_address': self.remote_address,
+            'referrer': self.referrer,
+            'browser': self.browser,
+            'platform': self.platform,
+            'mimetype': self.mimetype,
+            'response_time': self.response_time,
+            'user_type': self.user_type
         }

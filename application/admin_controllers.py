@@ -4,9 +4,9 @@ from flask import current_app as app
 from flask import jsonify, request, send_file
 from celery.result import AsyncResult
 from tasks import sendServiceProfessionalNotifs, sendServiceProfessionalReports, sendCustomerReports, exportServiceProfessionalAsCSV
-from sqlalchemy import event, and_
-from application.models import db, Admins, Services, ServiceRequests, ServiceProfessionals, Customers, CustomerRequests
-from application.security import token_required
+from sqlalchemy import event
+from application.models import db, Services, ServiceProfessionals, Customers
+from application.security import token_required, log_api_call
 from application.redis_controllers import createClient, updateServicesCache, updateServiceProfessionalsCache, updateCustomersCache
 import json
 
@@ -48,42 +48,49 @@ celery_app = create_celery_app(app)
 
 @app.post('/api/admin/tasks/send-service-professional-notifs')
 @token_required
+@log_api_call
 def startSendServiceProfessionalNotifs():
     task = sendServiceProfessionalNotifs.delay()
     return jsonify({'task_id': task.id}), 200
 
 @app.get('/api/admin/tasks/send-service-professional-notifs/<task_id>')
 @token_required 
+@log_api_call
 def getSendServiceProfessionalNotifs(task_id):
     task = celery_app.AsyncResult(task_id)
     return jsonify({'status': task.status, 'result': task.result}), 200
 
 @app.post('/api/admin/tasks/send-service-professional-reports')
 @token_required
+@log_api_call
 def startSendServiceProfessionalReports():
     task = sendServiceProfessionalReports.delay()
     return jsonify({'task_id': task.id}), 200
 
 @app.get('/api/admin/tasks/send-service-professional-reports/<task_id>')
 @token_required 
+@log_api_call
 def getSendServiceProfessionalReports(task_id):
     task = celery_app.AsyncResult(task_id)
     return jsonify({'status': task.status, 'result': task.result}), 200
 
 @app.post('/api/admin/tasks/send-customer-reports')
 @token_required
+@log_api_call
 def startSendCustomerReports():
     task = sendCustomerReports.delay()
     return jsonify({'task_id': task.id}), 200
 
 @app.get('/api/admin/tasks/send-customer-reports/<task_id>')
 @token_required 
+@log_api_call
 def getSendCustomerReports(task_id):
     task = celery_app.AsyncResult(task_id)
     return jsonify({'status': task.status, 'result': task.result}), 200
 
 @app.post('/api/admin/tasks/export-service-professional-as-csv')
 @token_required
+@log_api_call
 def startExportServiceProfessionalAsCSV():
     id = request.json['id']
     task = exportServiceProfessionalAsCSV.delay(id)
@@ -91,6 +98,7 @@ def startExportServiceProfessionalAsCSV():
 
 @app.get('/api/admin/tasks/export-service-professional-as-csv/<task_id>')
 @token_required
+@log_api_call
 def getExportServiceProfessionalAsCSV(task_id):
     task = celery_app.AsyncResult(task_id)
     print(task.state)
@@ -101,6 +109,7 @@ def getExportServiceProfessionalAsCSV(task_id):
 
 @app.get('/api/admin/tasks/export-service-professional-as-csv/download/<task_id>')
 @token_required
+@log_api_call
 def downloadExportServiceProfessionalAsCSV(task_id):
     task = celery_app.AsyncResult(task_id)
     if task.state == 'SUCCESS':
@@ -111,6 +120,7 @@ def downloadExportServiceProfessionalAsCSV(task_id):
 
 @app.post('/api/admin/service')
 @token_required
+@log_api_call
 def addService():
     name = request.form.get('name')
     description = request.form.get('description')
@@ -138,6 +148,7 @@ def addService():
 
 @app.patch('/api/admin/service')
 @token_required
+@log_api_call
 def modifyService():
     id = int(request.form.get('id'))
     service = Services.query.filter_by(id=id).first()
@@ -174,6 +185,7 @@ def modifyService():
 
 @app.delete('/api/admin/service')
 @token_required
+@log_api_call
 def deleteService():
     id = int(request.json['id'])
     service = Services.query.filter_by(id=id).first()
@@ -187,18 +199,21 @@ def deleteService():
 
 @app.get('/api/admin/service')
 @token_required
+@log_api_call
 def getServices():
     services = Services.query.all()
     return jsonify([service.serialize() for service in services]), 200
 
 @app.get('/api/admin/service-professionals/')
 @token_required
+@log_api_call
 def getUnapprovedServiceProfessionals():
     service_professionals = ServiceProfessionals.query.filter_by(admin_approved=0)
     return jsonify([service_professional.serialize() for service_professional in service_professionals]), 200
 
 @app.post('/api/admin/service-professionals/')
 @token_required
+@log_api_call
 def approveServiceProfessional():
     email = request.headers.get['email']
     service_professional = ServiceProfessionals.query.filter_by(email=email).first()
@@ -208,6 +223,7 @@ def approveServiceProfessional():
 
 @app.delete('/api/admin/service-professionals/')
 @token_required
+@log_api_call
 def deleteServiceProfessional():
     email = request.json['email']
     service_professional = ServiceProfessionals.query.filter_by(email=email).first()
@@ -218,6 +234,7 @@ def deleteServiceProfessional():
 # Redis cached
 @app.post('/api/admin/service-professionals/search')
 @token_required
+@log_api_call
 def getServiceProfessionalsForAdmin():
     r = createClient()
     serviceProfessional_keys = r.keys('service_professional:*')
@@ -231,6 +248,7 @@ def getServiceProfessionalsForAdmin():
 
 @app.patch('/api/admin/service-professionals/block')
 @token_required
+@log_api_call
 def blockServiceProfessional():
     email = request.json['email']
     service_professional = ServiceProfessionals.query.filter_by(email=email).first()
@@ -240,6 +258,7 @@ def blockServiceProfessional():
 
 @app.patch('/api/admin/service-professionals/unblock')
 @token_required
+@log_api_call
 def unblockServiceProfessional():
     email = request.json['email']
     service_professional = ServiceProfessionals.query.filter_by(email=email).first()
@@ -249,6 +268,7 @@ def unblockServiceProfessional():
 
 @app.delete('/api/admin/service-professionals/block')
 @token_required
+@log_api_call
 def deleteBlockedServiceProfessional():
     email = request.json['email']
     service_professional = ServiceProfessionals.query.filter_by(email=email).first()
@@ -270,6 +290,7 @@ def deleteBlockedServiceProfessional():
 # Redis cached
 @app.post('/api/admin/customers/search')
 @token_required
+@log_api_call
 def getCustomersForAdmin():
     r = createClient()
     customer_keys = r.keys('customer:*')
@@ -283,6 +304,7 @@ def getCustomersForAdmin():
 
 @app.patch('/api/admin/customers/block')
 @token_required
+@log_api_call
 def blockCustomer():
     email = request.json['email']
     customer = Customers.query.filter_by(email=email).first()
@@ -292,6 +314,7 @@ def blockCustomer():
 
 @app.patch('/api/admin/customers/unblock')
 @token_required
+@log_api_call
 def unblockCustomer():
     email = request.json['email']
     customer = Customers.query.filter_by(email=email).first()
@@ -301,6 +324,7 @@ def unblockCustomer():
 
 @app.delete('/api/admin/customers/block')
 @token_required
+@log_api_call
 def deleteBlockedCustomer():
     email = request.json['email']
     customer = Customers.query.filter_by(email=email).first()
