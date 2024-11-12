@@ -1,6 +1,7 @@
 import Navbar from '../navbar.js'
 import customFooter from '../nonStickyFooter.js'
 import seperator from '../lineSeperator.js'
+import adminStats1 from './adminStats1.js'
 
 export default ({
     template: /*html*/`
@@ -56,11 +57,34 @@ export default ({
 
         <seperator />
 
+        <!-- View Statistics -->
+        <div v-if="viewType==0">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center">
+                    <h3>Viewing Statistics</h3>
+                </div>
+            </div>
+
+            <br>
+
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-between">
+                    <button type="button" @click="statsViewType=1" class="btn-adminControlsWide">Overview</button>
+                    <button type="button" @click="statsViewType=2" class="btn-adminControlsWide">User Distribution</button>
+                    <button type="button" @click="statsViewType=3" class="btn-adminControlsWide">API Stats</button>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="viewType==0 && statsViewType==1">
+            <adminStats1 />
+        </div>
+
         <!-- Create a service -->
 
         <div v-if="viewType==1">
             <div class="row justify-content-center">
-                <div  class="col-12 col-md-6 d-flex justify-content-center">
+                <div class="col-12 col-md-6 d-flex justify-content-center">
                     <h3>Add a serivce.</h3>
                 </div>
             </div>
@@ -346,7 +370,8 @@ export default ({
     components: {
         Navbar,
         customFooter,
-        seperator
+        seperator,
+        adminStats1
     },
 
     methods: {
@@ -912,6 +937,7 @@ export default ({
             token: '',
             unapprovedServiceProfessionals: [],
             viewType: 0,
+            statsViewType: 1,
             name: '',
             description: '',
             price: 0,

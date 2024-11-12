@@ -24,6 +24,7 @@ def create_app():
         import application.customer_controllers
         import application.serviceProfessionals_controllers
         import application.util_controllers
+        import application.admin_stat_controllers
         import application.admin_controllers
 
         # Print all registered routes

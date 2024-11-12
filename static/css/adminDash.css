@@ -64,6 +64,52 @@
     color: #fff;
 }
 
+.card {
+    border-radius: 15px;
+    border-width: 1px;
+    border-color: black;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 18rem;
+}
+
+.card-header {
+    background: white;
+    color: black;
+    padding: 1rem;
+    padding-top: 1.5rem;
+    text-align: center;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-text-center {
+    text-align: center;
+}
+
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-footer {
+    background-color: #f8f9fa;
+    text-align: center;
+    padding: 1rem;
+}
+
+.stat-card-header {
+    color: black;
+    border-color: black;
+    padding: 1rem;
+    padding-top: 1.5rem;
+    text-align: center;
+}
+
 .slide-button {
     display: flex;
     align-items: center;
