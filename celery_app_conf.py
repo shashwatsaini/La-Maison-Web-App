@@ -34,6 +34,11 @@ def create_celery_app(app):
         'send-customer-reports-every-month': {
             'task': 'tasks.sendCustomerReports',
             'schedule': crontab(day_of_month=31, hour=8, minute=0),
+        },
+
+        'increment-service-professional-experience': {
+            'task': 'tasks.incrementServiceProfessionalExperience',
+            'schedule': crontab(day_of_month=31, hour=0, minute=0),
         }
     }
 

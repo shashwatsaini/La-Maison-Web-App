@@ -2,6 +2,7 @@ import Navbar from '../navbar.js'
 import customFooter from '../nonStickyFooter.js'
 import seperator from '../lineSeperator.js'
 import adminStats1 from './adminStats1.js'
+import adminStats2 from './adminStats2.js'
 
 export default ({
     template: /*html*/`
@@ -61,7 +62,7 @@ export default ({
         <div v-if="viewType==0">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 d-flex justify-content-center">
-                    <h3>Viewing Statistics</h3>
+                    <h3>Viewing Statistics: {{ statsView[statsViewType] }}</h3>
                 </div>
             </div>
 
@@ -69,15 +70,19 @@ export default ({
 
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6 d-flex justify-content-between">
-                    <button type="button" @click="statsViewType=1" class="btn-adminControlsWide">Overview</button>
-                    <button type="button" @click="statsViewType=2" class="btn-adminControlsWide">User Distribution</button>
-                    <button type="button" @click="statsViewType=3" class="btn-adminControlsWide">API Stats</button>
+                    <button type="button" @click="statsViewType=1" class="btn-adminControlsWide2">Overview</button>
+                    <button type="button" @click="statsViewType=2" class="btn-adminControlsWide2">Distributions</button>
+                    <button type="button" @click="statsViewType=3" class="btn-adminControlsWide2">API Stats</button>
                 </div>
             </div>
         </div>
 
         <div v-if="viewType==0 && statsViewType==1">
             <adminStats1 />
+        </div>
+
+        <div v-if="viewType==0 && statsViewType==2">
+            <adminStats2 />
         </div>
 
         <!-- Create a service -->
@@ -371,7 +376,8 @@ export default ({
         Navbar,
         customFooter,
         seperator,
-        adminStats1
+        adminStats1,
+        adminStats2
     },
 
     methods: {
@@ -937,7 +943,13 @@ export default ({
             token: '',
             unapprovedServiceProfessionals: [],
             viewType: 0,
-            statsViewType: 1,
+            statsViewType: 2,
+            statsView: {
+                1: 'Overview',
+                2: 'Distributions',
+                3: 'API Stats'
+            },
+
             name: '',
             description: '',
             price: 0,

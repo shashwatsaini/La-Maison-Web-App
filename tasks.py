@@ -515,3 +515,15 @@ def exportServiceProfessionalAsCSV(id):
             f.write(f'{service_request.customer_id},{service_request.serviceProfessional_id},{service_request.price},{service_request.for_date},{service_request.description},{service_request.status}\n')
 
     return {'message': 'CSV exported successfully', 'file_path': file_path}
+
+@celery_app.task
+def incrementServiceProfessionalExperience():
+    logger.info('----------------- Incrementing Service Professional Experience -----------------')
+
+    service_professionals = ServiceProfessionals.query.all()
+    for service_professional in service_professionals:
+        service_professional.experience += 1
+
+    db.session.commit()
+
+    return {'message': 'Experience incremented successfully', 'count': len(service_professionals)}
