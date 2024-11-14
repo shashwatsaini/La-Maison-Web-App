@@ -15,7 +15,7 @@ export default ({
 
         <div class="row justify-content-center">
             <div class="col-12 col-md-6 form-container">
-                <form @submit.prevent="checkForm" action="/adminLogin" method="post">
+                <form @submit.prevent="checkForm" action="/api/login" method="post">
                     <div class="mb-3">
                         <label for="InputEmail" class="form-label">Email Address</label>
                         <input type="text" class="form-control" id="InputEmail" v-model="email" required>
@@ -92,7 +92,7 @@ export default ({
                         window.location.href = '/serviceProfessionalDash'
                     }
                 } else {
-                    const { message, user_type } = await response.json()
+                    const { message } = await response.json()
                     alert(message)
                 }
             } catch (error) {

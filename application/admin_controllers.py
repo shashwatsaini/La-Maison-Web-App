@@ -5,7 +5,7 @@ from flask import jsonify, request, send_file
 from celery.result import AsyncResult
 from tasks import sendServiceProfessionalNotifs, sendServiceProfessionalReports, sendCustomerReports, exportServiceProfessionalAsCSV
 from sqlalchemy import event
-from application.models import db, Services, ServiceProfessionals, Customers
+from application.models import db, Services, ServiceProfessionals, Customers, ServiceRequests, CustomerRequests
 from application.security import token_required, log_api_call
 from application.redis_controllers import createClient, updateServicesCache, updateServiceProfessionalsCache, updateCustomersCache
 import json
@@ -215,7 +215,7 @@ def getUnapprovedServiceProfessionals():
 @token_required
 @log_api_call
 def approveServiceProfessional():
-    email = request.headers.get['email']
+    email = request.json['email']
     service_professional = ServiceProfessionals.query.filter_by(email=email).first()
     service_professional.admin_approved = 1
     db.session.commit()
@@ -274,18 +274,16 @@ def deleteBlockedServiceProfessional():
     service_professional = ServiceProfessionals.query.filter_by(email=email).first()
     service_professional.admin_approved = 3
 
-    """
     service_requests = ServiceRequests.query.filter_by(serviceProfessional_id=email).all()
     for service_request in service_requests:
-        db.session.remove(service_request)
+        db.session.delete(service_request)
 
     customer_requests = CustomerRequests.query.filter_by(serviceProfessional_id=email).all()
     for customer_request in customer_requests:
-        db.session.remove(customer_request)
+        db.session.delete(customer_request)
         
     db.session.commit()
     return jsonify('Service professional deleted successfully'), 200
-    """
 
 # Redis cached
 @app.post('/api/admin/customers/search')
@@ -329,14 +327,14 @@ def deleteBlockedCustomer():
     email = request.json['email']
     customer = Customers.query.filter_by(email=email).first()
     customer.admin_action = 2
-    """
+
     service_requests = ServiceRequests.query.filter_by(customer_id=email).all()
     for service_request in service_requests:
-        db.session.remove(service_request)
+        db.session.delete(service_request)
 
     customer_requests = CustomerRequests.query.filter_by(customer_id=email).all()
     for customer_request in customer_requests:
-        db.session.remove(customer_request)"""
+        db.session.delete(customer_request)
         
     db.session.commit()
     return jsonify('Customer deleted successfully'), 200

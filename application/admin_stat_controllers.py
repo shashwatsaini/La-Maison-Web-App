@@ -177,7 +177,7 @@ def getUserDistributionStats():
 @log_api_call
 def getAPIStats():
     api_requests = API_Log.query.all()
-    recent_api_requests = API_Log.query.filter(API_Log.date >= datetime.now() - timedelta(days=2)).all()
+    recent_api_requests = API_Log.query.filter(API_Log.date >= datetime.now() - timedelta(days=2)).order_by(API_Log.date.asc()).all()
     
     # Recent API Requests
     api_requests_recent = {}
@@ -189,17 +189,18 @@ def getAPIStats():
     total_egress = {}
 
     for api_request in recent_api_requests:
-        if str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour) not in api_requests_recent:
-            api_requests_recent[str(api_request.date.strftime('%A'))[:3] + ' Hour ' + str(api_request.date.hour)] = 1
-            api_latency[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] = api_request.response_time
-            total_ingress[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] = api_request.size
-            total_egress[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] = api_request.output_size
+        key = api_request.date.replace(minute=0, second=0, microsecond=0).strftime('%Y-%m-%d %H:%M:%S')
+        if key not in api_requests_recent:
+            api_requests_recent[key] = 1
+            api_latency[key] = api_request.response_time
+            total_ingress[key] = api_request.size
+            total_egress[key] = api_request.output_size
         else:
-            api_requests_recent[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] += 1
-            api_latency[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] += api_request.response_time
-            total_ingress[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] += api_request.size
-            total_egress[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] += api_request.output_size
-   
+            api_requests_recent[key] += 1
+            api_latency[key] += api_request.response_time
+            total_ingress[key] += api_request.size
+            total_egress[key] += api_request.output_size
+    
     for date in api_latency:
         api_latency[date] /= api_requests_recent[date]
 

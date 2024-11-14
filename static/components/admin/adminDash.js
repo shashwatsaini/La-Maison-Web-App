@@ -632,7 +632,8 @@ export default ({
             this.searchServiceProfessionals = this.serviceProfessionalsAll.filter(professional => {
                 const matchesQuery = professional.name.toLowerCase().includes(this.searchServiceProfessionalQuery.toLowerCase()) ||
                                      professional.email.toLowerCase().includes(this.searchServiceProfessionalQuery.toLowerCase()) ||
-                                     professional.location.toLowerCase().includes(this.searchServiceProfessionalQuery.toLowerCase())
+                                     professional.location.toLowerCase().includes(this.searchServiceProfessionalQuery.toLowerCase()) ||
+                                     professional.service_name.toLowerCase().includes(this.searchServiceProfessionalQuery.toLowerCase())
                 const validAdminApproved = professional.admin_approved !== 0 && professional.admin_approved !== 3
                 return matchesQuery && validAdminApproved
             })
@@ -949,7 +950,7 @@ export default ({
             token: '',
             unapprovedServiceProfessionals: [],
             viewType: 0,
-            statsViewType: 3,
+            statsViewType: 1,
             statsView: {
                 1: 'Overview',
                 2: 'Distributions',

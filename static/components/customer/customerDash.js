@@ -685,7 +685,7 @@ export default ({
             const groupedServiceProfessionals = []
         
             serviceProfessionals.forEach(professional => {
-                const { service_type } = professional
+                const service_type = professional.service_type
         
                 if (!groupedServiceProfessionals[service_type]) {
                     groupedServiceProfessionals[service_type] = []
@@ -721,7 +721,8 @@ export default ({
 
             this.searchServiceProfessionals = this.searchServiceProfessionalsAll.filter(professional => {
                 const matchesQuery = professional.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                                     professional.location.toLowerCase().includes(this.searchQuery.toLowerCase())
+                                     professional.location.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                                     professional.service_name.toLowerCase().includes(this.searchQuery.toLowerCase())
                 
                 return matchesQuery
             })
@@ -780,7 +781,7 @@ export default ({
         async getServices() {
             const response = await fetch('/api/services')
             const services = await response.json()
-            this.services = services
+            this.services = services.sort((a, b) => a.id - b.id)
         }
     },
 

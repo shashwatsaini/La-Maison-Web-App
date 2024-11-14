@@ -1,7 +1,23 @@
 from flask import current_app as app
 from flask import jsonify, request, render_template
+from sqlalchemy import event
 from application.models import db, Admins, Services, ServiceProfessionals, Customers
+from application.redis_controllers import updateServiceProfessionalsCache, updateCustomersCache
 from application.security import generate_token, log_api_call
+
+# Event listeners to update Redis cache
+
+@event.listens_for(ServiceProfessionals, 'after_insert')
+@event.listens_for(ServiceProfessionals, 'after_update')
+@event.listens_for(ServiceProfessionals, 'after_delete')
+def update_services_cache(mapper, connection, target):
+    updateServiceProfessionalsCache()
+
+@event.listens_for(Customers, 'after_insert')
+@event.listens_for(Customers, 'after_update')
+@event.listens_for(Customers, 'after_delete')
+def update_services_cache(mapper, connection, target):
+    updateCustomersCache()
 
 # Catch all routes and render the index.html file
 @app.route('/', defaults={'path': ''})
@@ -48,7 +64,7 @@ def login():
         token = generate_token(email)
         return jsonify({'message': 'User has been blocked and deleted, post review. If you think this is a mistake, please contact the admin.', 'user_type': 1}), 405
     else:
-        return jsonify('User not found.'), 404
+        return jsonify({'message': 'User not found, or credentials are incorrect.', 'user_type': -1}), 404
 
 # Registers a new user
 @app.post('/api/register')
