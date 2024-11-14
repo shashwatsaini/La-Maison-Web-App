@@ -17,7 +17,7 @@ export default ({
 
         <div v-if="registerType == 0" class="row justify-content-center">
             <div class="col-12 col-md-6 form-container">
-                <form @submit.prevent="checkFormCustomer" action="/register" method="post">
+                <form @submit.prevent="checkFormCustomer" action="/api/register" method="post">
                     <div class="mb-3">
                         <label for="InputEmail" class="form-label">Email Address</label>
                         <input type="text" class="form-control" id="InputEmail" v-model="email" required>

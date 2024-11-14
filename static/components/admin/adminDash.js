@@ -3,6 +3,7 @@ import customFooter from '../nonStickyFooter.js'
 import seperator from '../lineSeperator.js'
 import adminStats1 from './adminStats1.js'
 import adminStats2 from './adminStats2.js'
+import adminStats3 from './adminStats3.js'
 
 export default ({
     template: /*html*/`
@@ -83,6 +84,10 @@ export default ({
 
         <div v-if="viewType==0 && statsViewType==2">
             <adminStats2 />
+        </div>
+
+        <div v-if="viewType==0 && statsViewType==3">
+            <adminStats3 />
         </div>
 
         <!-- Create a service -->
@@ -377,7 +382,8 @@ export default ({
         customFooter,
         seperator,
         adminStats1,
-        adminStats2
+        adminStats2,
+        adminStats3
     },
 
     methods: {
@@ -943,7 +949,7 @@ export default ({
             token: '',
             unapprovedServiceProfessionals: [],
             viewType: 0,
-            statsViewType: 2,
+            statsViewType: 3,
             statsView: {
                 1: 'Overview',
                 2: 'Distributions',

@@ -434,12 +434,5 @@ export default {
         }
 
         this.getUserDistributionStats()
-    },
-
-    beforeDestroy() {
-        // Destroy the chart instance to avoid memory leaks when the component is unmounted
-        if (this.chart) {
-            this.chart.destroy();
-        }
     }
 }

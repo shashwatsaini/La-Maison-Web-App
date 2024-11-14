@@ -83,6 +83,10 @@ def log_api_call(f):
             log.platform = 'Unknown'
         
         response = f(*args, **kwargs)
+        try:
+            log.output_size = len(response.data)
+        except:
+            log.output_size = 0
 
         end_time = time.time()
         log.response_time = end_time - start_time
@@ -101,6 +105,6 @@ def log_api_call(f):
         db.session.add(log)
         db.session.commit()
 
-        return f(*args, **kwargs)
+        return response
 
     return decorated_function

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import current_app as app
 from flask import jsonify, request
 from application.models import db, Services, ServiceProfessionals, Customers, ServiceRequests, CustomerRequests, API_Log
@@ -171,4 +171,63 @@ def getUserDistributionStats():
         'customer_lifetime_distribution': customer_lifetime_distribution,
         'customer_services_booked_distribution': customer_services_booked_distribution,
         'customer_services_price_distribution': customer_services_price_distribution
+    })
+
+@app.get('/api/admin/stats/api')
+@log_api_call
+def getAPIStats():
+    api_requests = API_Log.query.all()
+    recent_api_requests = API_Log.query.filter(API_Log.date >= datetime.now() - timedelta(days=2)).all()
+    
+    # Recent API Requests
+    api_requests_recent = {}
+    # Recent Average API Latency
+    api_latency = {}
+    # Total Ingress
+    total_ingress = {}
+    # Total Egress
+    total_egress = {}
+
+    for api_request in recent_api_requests:
+        if str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour) not in api_requests_recent:
+            api_requests_recent[str(api_request.date.strftime('%A'))[:3] + ' Hour ' + str(api_request.date.hour)] = 1
+            api_latency[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] = api_request.response_time
+            total_ingress[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] = api_request.size
+            total_egress[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] = api_request.output_size
+        else:
+            api_requests_recent[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] += 1
+            api_latency[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] += api_request.response_time
+            total_ingress[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] += api_request.size
+            total_egress[str(api_request.date.strftime('%A')[:3]) + ' Hour ' + str(api_request.date.hour)] += api_request.output_size
+   
+    for date in api_latency:
+        api_latency[date] /= api_requests_recent[date]
+
+    # Daily API Requests
+    daily_api_requests = {}
+    for api_request in api_requests:
+        date = api_request.date.strftime('%Y-%m-%d')
+        if date not in daily_api_requests:
+            daily_api_requests[date] = 1
+        else:
+            daily_api_requests[date] += 1
+    
+    # Daily Average API Latency
+    daily_average_api_latency = {}
+    for api_request in api_requests:
+        date = api_request.date.strftime('%Y-%m-%d')
+        if date not in daily_average_api_latency:
+            daily_average_api_latency[date] = api_request.response_time
+        else:
+            daily_average_api_latency[date] += api_request.response_time
+    for date in daily_average_api_latency:
+        daily_average_api_latency[date] /= daily_api_requests[date]
+    
+    return jsonify({
+        'api_requests_recent': api_requests_recent,
+        'api_latency': api_latency,
+        'total_ingress': total_ingress,
+        'total_egress': total_egress,
+        'daily_api_requests': daily_api_requests,
+        'daily_average_api_latency': daily_average_api_latency
     })

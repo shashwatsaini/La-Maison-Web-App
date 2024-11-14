@@ -59,7 +59,7 @@ def register():
     if data['registerType'] == 0:
         if Customers.query.filter_by(email=data['email']).first():
             return jsonify({'message': 'Email already in use.'}), 400
-
+        
         else:
             email = data['email']
             name = data['name']
@@ -73,7 +73,7 @@ def register():
     
     elif data['registerType'] == 1:
         if ServiceProfessionals.query.filter_by(email=data['email']).first():
-            return jsonify({'message': 'Email already in use.'}), 400
+            return jsonify({'message': 'Email already in use'}), 400
         
         else:
             email = data['email']

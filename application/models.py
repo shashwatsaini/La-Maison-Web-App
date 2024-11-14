@@ -1,7 +1,6 @@
 from datetime import datetime
 from application.database import db
 from flask import current_app as app
-from flask_sqlalchemy import SQLAlchemy
 
 class Services(db.Model):
     __tablename__ = 'Services'
@@ -169,6 +168,7 @@ class API_Log(db.Model):
     date = db.Column(db.DateTime)
     method = db.Column(db.String)
     size = db.Column(db.Integer)
+    output_size = db.Column(db.Integer, default=0)
     path = db.Column(db.String)
     user_agent = db.Column(db.String)
     remote_address = db.Column(db.String)
@@ -185,6 +185,7 @@ class API_Log(db.Model):
             'date': self.date,
             'method': self.method,
             'size': self.size,
+            'output_size': self.output_size,
             'path': self.path,
             'user_agent': self.user_agent,
             'remote_address': self.remote_address,
