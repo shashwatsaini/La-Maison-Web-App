@@ -1,0 +1,7 @@
+{
+    "REDIS_LOCAL_HOST": "",
+    "REDIS_LOCAL_PORT": "",
+    "SMTP_SENDER_EMAIL": "",
+    "SMTP_SENDER_PASSWORD": "",
+    "SMTP_SERVER": ""
+}
