@@ -1,0 +1,819 @@
+openapi: 3.0.0
+info:
+  title: La Maison API
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:4000
+paths:
+  /api/admin/login:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN: Login admin'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: ''
+                password: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/service:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN: Create a service'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                price:
+                  type: string
+                timeRequired:
+                  type: string
+                icon:
+                  type: string
+                  format: binary
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - default
+      summary: 'ADMIN: Reject service professional'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    patch:
+      tags:
+        - default
+      summary: 'ADMIN: Modify a service'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                price:
+                  type: string
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/service-professionals/:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN: Approve service professional'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - default
+      summary: 'ADMIN: Get unapproved service professionals'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/service-professionals/search:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN: Get (search) service professionals'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/customers/search:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN: Get (search) customers'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/tasks/send-service-professional-notifs:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN ASYNC: Start sending service professional notifications'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/tasks/send-service-professional-reports:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN ASYNC: Start sending service professional reports'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/tasks/send-customer-reports:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN ASYNC: Start sending customer reports'
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              type: object
+              example: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/tasks/export-service-professional-as-csv:
+    post:
+      tags:
+        - default
+      summary: 'ADMIN ASYNC: Start exporting service professional as CSV'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                id: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/tasks/send-service-professional-notifs/<task_id>:
+    get:
+      tags:
+        - default
+      summary: 'ADMIN ASYNC: Receive result from service professional notifications'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/tasks/send-service-professional-reports/<task_id>:
+    get:
+      tags:
+        - default
+      summary: 'ADMIN ASYNC: Receive result from service professional reports'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/tasks/send-customer-reports/<task_id>:
+    get:
+      tags:
+        - default
+      summary: 'ADMIN ASYNC: Receive result from customer reports'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/tasks/export-service-professional-as-csv/<task_id>:
+    get:
+      tags:
+        - default
+      summary: 'ADMIN ASYNC: Receive result from exporting service professional as CSV'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/stats/overview:
+    get:
+      tags:
+        - default
+      summary: 'ADMIN STATS: Get overview'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/stats/distributions:
+    get:
+      tags:
+        - default
+      summary: 'ADMIN STATS: Get user distribution'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/stats/api:
+    get:
+      tags:
+        - default
+      summary: 'ADMIN STATS: Get API stats'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/service-professionals/block:
+    delete:
+      tags:
+        - default
+      summary: 'ADMIN: Delete service professional'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    patch:
+      tags:
+        - default
+      summary: 'ADMIN: Block service professional'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/customers/block:
+    delete:
+      tags:
+        - default
+      summary: 'ADMIN: Delete customer'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    patch:
+      tags:
+        - default
+      summary: 'ADMIN: Block customer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/service-professionals/unblock:
+    patch:
+      tags:
+        - default
+      summary: 'ADMIN: Unblock service professional'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/admin/customers/unblock:
+    patch:
+      tags:
+        - default
+      summary: 'ADMIN: Unblock customer'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/login:
+    post:
+      tags:
+        - default
+      summary: 'USER: Login user'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: ''
+                password: ''
+      parameters:
+        - name: Content-Type
+          in: header
+          schema:
+            type: string
+          example: application/json
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/customer/service-professionals/requests:
+    post:
+      tags:
+        - default
+      summary: 'CUSTOMER: Create customer request'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example: "{\r\n    \"serviceProfessional_id\": \"\",\r\n    \"service_type\": ,\r\n    \"price\": ,\r\n    \"for_date\": \"\",\r\n    \"description\": \"\"\r\n}"
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    delete:
+      tags:
+        - default
+      summary: 'CUSTOMER: Delete customer request'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    patch:
+      tags:
+        - default
+      summary: 'CUSTOMER: Modify customer request'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                id: ''
+                description: ''
+                for_date: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - default
+      summary: 'CUSTOMER: List customer requests'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/customer/requests:
+    delete:
+      tags:
+        - default
+      summary: 'CUSTOMER: Delete service request'
+      parameters:
+        - name: x-access-token
+          in: query
+          schema:
+            type: string
+          example: '{{$timestamp}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - default
+      summary: 'CUSTOMER: List service requests'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/customer/requests/completed:
+    patch:
+      tags:
+        - default
+      summary: 'CUSTOMER: Rate completed customer request'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                id: ''
+                remark: ''
+                rating: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - default
+      summary: 'CUSTOMER: List completed customer requests'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/customer/:
+    get:
+      tags:
+        - default
+      summary: 'CUSTOMER: Get customer'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/customer/service-professionals:
+    get:
+      tags:
+        - default
+      summary: 'CUSTOMER: List service professionals'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/service-professionals/customer/requests/accept:
+    post:
+      tags:
+        - default
+      summary: 'PROFESSIONAL: Accept customer request'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                id: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/service-professionals/requests:
+    patch:
+      tags:
+        - default
+      summary: 'PROFESSIONAL: Complete a service request'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                id: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - default
+      summary: 'PROFESSIONAL: List service requests'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/service-professionals/customer/requests/reject:
+    patch:
+      tags:
+        - default
+      summary: 'PROFESSIONAL: Reject customer request'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                id: ''
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/service-professionals/customer/requests:
+    get:
+      tags:
+        - default
+      summary: 'PROFESSIONAL: List customer requests'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/service-professionals/requests/completed:
+    get:
+      tags:
+        - default
+      summary: 'PROFESSIONAL: List completed service requests'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/service-professional/:
+    get:
+      tags:
+        - default
+      summary: 'PROFESSIONAL: Get service professional'
+      parameters:
+        - name: x-access-token
+          in: header
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/services:
+    get:
+      tags:
+        - default
+      summary: List services
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}

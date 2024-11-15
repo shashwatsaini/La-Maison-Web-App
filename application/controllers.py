@@ -25,6 +25,11 @@ def update_services_cache(mapper, connection, target):
 def catch_all(path):
     return render_template('index.html')
 
+# API docs
+@app.route('/api/docs')
+def docs():
+    return render_template('docs.html')
+
 @app.post('/api/admin/login')
 @log_api_call
 def adminLogin():
