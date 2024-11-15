@@ -8,6 +8,10 @@ import json
 def createClient():
     return redis.Redis(host=app.config['REDIS_HOST'], port=app.config['REDIS_PORT'])
 
+def clearCache():
+    r = createClient()
+    r.flushall()
+
 def updateServicesCache():
     r = createClient()
     services = Services.query.all()

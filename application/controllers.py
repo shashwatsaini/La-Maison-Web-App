@@ -2,7 +2,7 @@ from flask import current_app as app
 from flask import jsonify, request, render_template
 from sqlalchemy import event
 from application.models import db, Admins, Services, ServiceProfessionals, Customers
-from application.redis_controllers import updateServiceProfessionalsCache, updateCustomersCache
+from application.redis_controllers import updateServiceProfessionalsCache, updateCustomersCache, updateServicesCache
 from application.security import generate_token, log_api_call
 
 # Event listeners to update Redis cache
@@ -18,6 +18,12 @@ def update_services_cache(mapper, connection, target):
 @event.listens_for(Customers, 'after_delete')
 def update_services_cache(mapper, connection, target):
     updateCustomersCache()
+
+@event.listens_for(Services, 'after_insert')
+@event.listens_for(Services, 'after_update')
+@event.listens_for(Services, 'after_delete')
+def update_services_cache(mapper, connection, target):
+    updateServicesCache()
 
 # Catch all routes and render the index.html file
 @app.route('/', defaults={'path': ''})

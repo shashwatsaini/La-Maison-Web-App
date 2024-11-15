@@ -33,6 +33,7 @@ def create_app():
 
         db.init_app(app)
 
+        redis_controllers.clearCache()
         redis_controllers.updateServicesCache()
         redis_controllers.updateServiceProfessionalsCache()
         redis_controllers.updateCustomersCache()
