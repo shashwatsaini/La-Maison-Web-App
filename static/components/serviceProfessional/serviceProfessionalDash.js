@@ -364,7 +364,7 @@ export default ({
         async getServices() {
             const response = await fetch('/api/services')
             const services = await response.json()
-            this.services = services
+            this.services = services.sort((a, b) => a.id - b.id)
         }
     },
 

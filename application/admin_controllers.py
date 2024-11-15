@@ -7,15 +7,22 @@ from tasks import sendServiceProfessionalNotifs, sendServiceProfessionalReports,
 from sqlalchemy import event
 from application.models import db, Services, ServiceProfessionals, Customers, ServiceRequests, CustomerRequests
 from application.security import token_required, log_api_call
-from application.redis_controllers import createClient, updateServicesCache, updateServiceProfessionalsCache, updateCustomersCache
+from application.redis_controllers import createClient, clearCache,updateServicesCache, updateServiceProfessionalsCache, updateCustomersCache
 import json
 
 # Event listeners to update Redis cache
 
-@event.listens_for(Services, 'after_insert')
 @event.listens_for(Services, 'after_update')
 @event.listens_for(Services, 'after_delete')
 def update_services_cache(mapper, connection, target):
+    updateServicesCache()
+
+@event.listens_for(Services, 'before_insert')
+def update_services_cache(mapper, connection, target):
+    # Set the id to the id of the last row + 1
+    last_service = Services.query.order_by(Services.id.desc()).first()
+    target.id = (last_service.id + 1) if last_service else 1
+
     updateServicesCache()
 
 @event.listens_for(ServiceProfessionals, 'after_insert')

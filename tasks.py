@@ -92,8 +92,6 @@ def sendServiceProfessionalNotifs():
 
             smtp_server.sendmail(app.config['SMTP_SENDER_EMAIL'], service_professional.email, msg.as_string())
 
-            break
-
     return {'message': 'Notifs sent successfully', 'count': len(service_professionals)}
 
 @celery_app.task
